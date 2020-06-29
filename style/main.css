@@ -1,0 +1,27 @@
+h1,
+h2,
+h3 {
+  font-family: Bahnschrift;
+  text-shadow: 1px 1px 2px darkslategray;
+  font-weight: normal;
+}
+
+small {
+  font-size: 0.7em;
+}
+
+.remark-slide-content {
+  background: url("../images/noisy.png");
+  background-color: white;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 36px;
+  color: #333333;
+  border-left: 1em solid darkslategray;
+  padding: 1em 3em;
+}
+
+.remark-code,
+.remark-inline-code {
+  font-family: Consolas;
+  font-size: 28px;
+}

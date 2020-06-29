@@ -1,27 +1,62 @@
 h1,
 h2,
 h3 {
-  font-family: Bahnschrift;
-  text-shadow: 1px 1px 2px darkslategray;
-  font-weight: normal;
-}
-
-small {
-  font-size: 0.7em;
+    font-family: Bahnschrift;
+    text-shadow: 1px 1px 2px darkslategray;
+    font-weight: normal;
 }
 
 .remark-slide-content {
-  background: url("../images/noisy.png");
-  background-color: white;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 36px;
-  color: #333333;
-  border-left: 1em solid darkslategray;
-  padding: 1em 3em;
+    background: url("../images/noisy.png");
+    background-color: white;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 36px;
+    color: #333333;
+    border-left: 1em solid darkslategray;
+    padding: 1em 3em;
 }
 
 .remark-code,
 .remark-inline-code {
-  font-family: Consolas;
-  font-size: 28px;
+    font-family: Consolas;
+    font-size: 28px;
+}
+
+.box {
+    font-family: Bahnschrift;
+    margin: 0.5em 0;
+    padding: 0.5em;
+    padding-left: 1em;
+    border-left: 0.5em solid darkslategray;
+    display: block;
+    background: rgba(100, 100, 100, 0.1);
+}
+
+.top {
+    margin-left: -3em;
+    margin-top: -1em;
+}
+
+.bottom {
+    position: fixed;
+    bottom: 0;
+}
+
+.ref {
+    font-size: 0.7em;
+    color: crimson;
+    vertical-align: super;
+}
+
+.footnote {
+    font-size: 0.7em;
+    display: block;
+}
+
+.ref:before {
+    content: "[";
+}
+
+.ref:after {
+    content: "]";
 }

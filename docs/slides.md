@@ -10,13 +10,12 @@ Lorenzo Peña &middot; @lorinkoz
 ## The agenda
 
 1. Django in 2020
-2. Django, multi-tenancy & you
+2. Django, multi-tenancy and you
 3. The challanges ahead
     - The active tenant
-    - Database, models & managers
-    - Routing requests to tenants
+    - Database, models and managers
+    - Requests and URL reversing
     - The scope of everything else
-    - Cross-tenant security
 4. Yet another package for this
 
 ---
@@ -30,7 +29,7 @@ layout: false
 
 ## 2020 is going great so far
 
-![Dinosaur in traffic with meteors falling](images/dinosaur-traffic.jpg)
+.center[![Dinosaur in traffic with meteors falling](images/dinosaur-traffic.jpg)]
 
 ---
 
@@ -38,24 +37,27 @@ layout: true
 
 ## But so is Django <small>(no... seriously)</small>
 
-![Django banner](images/django.png)
+![Django motto](images/django.png)
 
 ---
 
 -   Mature, solid and battle tested.
 -   For perfectionists (like you)
 -   For people with deadlines (like you)
-
----
-
 -   Vast ecosystem - over 4k projects.ref[1]
--   Bright minds are second-guessing the modern web.ref[2]
--   People are doing email services today in vanilla monolith makers.ref[3]
 
 .bottom[
 .footnote[.ref[1] As listed in https://djangopackages.org]
-.footnote[.ref[2] https://macwright.org/2020/05/10/spa-fatigue.html]
-.footnote[.ref[3] https://twitter.com/dhh/status/1275901955995385856?s=20]
+]
+
+---
+
+-   Bright minds are second-guessing the modern web.ref[1]
+-   People are doing email services today in vanilla monolith makers.ref[2]
+
+.bottom[
+.footnote[.ref[1] https://macwright.org/2020/05/10/spa-fatigue.html]
+.footnote[.ref[2] https://twitter.com/dhh/status/1275901955995385856?s=20]
 ]
 
 ---
@@ -63,7 +65,7 @@ layout: true
 class: middle
 layout: false
 
-# Django, multi-tenancy & you
+# Django, multi-tenancy and you
 
 --
 
@@ -82,7 +84,7 @@ The world is divided in two kinds of Djangonauts:
 
 --
 
-.box[🔥 Hot take, isn't it?]
+.box[🔥 Hot take?]
 
 --
 
@@ -127,18 +129,8 @@ The world is divided in two kinds of Djangonauts:
 
 ---
 
-class: middle
-layout: false
-
-What do Django, multi-tenancy and you have in common?
-
---
-
-The future... at least 😉
-
----
-
 class: center middle
+layout: false
 
 ## Take the .red[red] pill, Neo
 
@@ -164,13 +156,13 @@ layout: true
 
 ---
 
-Users exist in the context of tenants
+Users exist **within** the context of tenants
 
 .center[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
 
 ---
 
-Users exist at the same level of tenants
+Users exist **outside** the context of tenants
 
 .center[![Diagram of users outside tenants](images/diagram-users-out-tenants.png)]
 
@@ -186,9 +178,14 @@ layout: false
 
 ## How do we get to it?
 
--   Many things to do, and do right.
--   Non trivial parts.
--   Help is very much appreciated.
+Can I just start hacking my project?
+
+--
+
+Yes, but...
+
+.warning[🤹 There are many things to do, and do right]
+.warning[🤯 There are non trivial parts]
 
 ---
 
@@ -197,7 +194,11 @@ layout: false
 -   There is a number of solid packages to help with the multi-tenancy problem in Django.
 -   The whole idea of this talk came from my experience forking one of those packages.
 
+--
+
 .box[✋ But let's not take a package-first approach]
+
+--
 
 Instead, let's pretend we're going to implement multi-tenancy from scratch, without the help of any package.
 
@@ -218,7 +219,7 @@ layout: true
 
 We have to adjust our mindset:
 
-.box[Most operations will now require a tenant to be considered **the active tenant**]
+.box[Most operations will now require a tenant to be considered 😎 **the active tenant**]
 
 ---
 
@@ -233,7 +234,7 @@ set_active_tenant(tenant)
 
 ---
 
-.warning[What if, for some operation, there is **no active tenant**?]
+.warning[🤔 What if, for some operation, there is **no active tenant**?]
 
 We will have to answer these questions in a case by case basis:
 
@@ -268,7 +269,7 @@ And everything else...
 class: middle
 layout: false
 
-# Database, models & managers
+# Database, models and managers
 
 ---
 
@@ -283,13 +284,13 @@ layout: true
 
 ---
 
-.left-column-66[**Semi-isolated:** One database, one schema per tenant (PostgreSQL)]
-.right-column-33[![Diagram of semi-isolated tenants](images/diagram-semi-isolated.png)]
+.left-column-66[**Shared:** One database, tenant column on (almost) every table]
+.right-column-33[![Diagram of shared database](images/diagram-shared.png)]
 
 ---
 
-.left-column-66[**Shared:** One database, tenant column on (almost) every table]
-.right-column-33[![Diagram of shared database](images/diagram-shared.png)]
+.left-column-66[**Semi-isolated:** One database, one schema per tenant (PostgreSQL)]
+.right-column-33[![Diagram of semi-isolated tenants](images/diagram-semi-isolated.png)]
 
 ---
 
@@ -323,6 +324,8 @@ Order.objects.using("tenant2").filter(...)
 Order.objects.db_manager("tenant2").do_something(...)
 ```
 
+--
+
 .box[🙋 How to control queries outside of your code?]
 
 ---
@@ -352,6 +355,13 @@ class IsolatedTenantsRouter:
 
 ---
 
+-   Do it if you expect a number of tenants in the lower tens.
+-   Or if you can afford to buy a new Lamborghini for every tenant you get.
+
+.right[![Three Lamborghinis](images/lamborghini.png)]
+
+---
+
 layout: true
 
 ## Shared database
@@ -364,8 +374,8 @@ All tenant-specific models require a FK to the model that controls the tenants:
 class SharedTenantModel(models.Model):
 
     tenant = models.ForeignKey(
-        "tenant_app.TenantModel",
-        on_delte=models.CASCADE,
+        "TenantModel",
+        on_delete=models.PROTECT,  # No easy tenant deletion
         related_name="%(class)ss"
     )
 
@@ -415,9 +425,24 @@ instance = serializer.save(tenant=get_active_tenant())
 
 ---
 
-**.red[Limitations]**
+This quickly escalates to:
 
--   Increased complexity of isolating the tenants.
+.center[![Django motto with perfectionists replaced with burned out people](images/django-burned-out.png)]
+
+--
+
+The good news is:
+
+.box[It's possible to automatically inject the tenant in most use cases, but this requires <u>additional wizardry</u>]
+
+---
+
+**.green[Recommendations]**
+
+-   Put all your tenant specific queries in a single place.
+-   Unit test each one of them, and make the test suite fail if any query is untested.
+
+.box[🧸 Tests are a soft pillow]
 
 ---
 
@@ -427,15 +452,68 @@ layout: true
 
 ---
 
-.warning[⚠️ HYPE WARNING]
-
 Use PostgreSQL schemas.ref[1] to isolate tenants within a single database.
-
-The concept of `search_path` allows for interesting combinations of isolated and shared data.
 
 .bottom[
 .footnote[.ref[1] https://www.postgresql.org/docs/9.1/ddl-schemas.html]
 ]
+
+--
+
+.warning[⚠️ HYPE WARNING]
+
+---
+
+The concept of `search_path` allows for interesting combinations of isolated and shared data.
+
+--
+
+.left-column[
+With `search_path=tenant1,shared` tables are searched in the schema of tenant 1 first, then in the shared schema
+]
+.right-column[![Diagram of schemas](images/schemas.png)]
+
+---
+
+Requires a custom database backend in order to set `search_path` based on active tenant:
+
+```python
+from django.db.backends.postgresql import base as postgresql
+class DatabaseWrapper(postgresql.DatabaseWrapper):
+    def _cursor(self, name=None):  # Over simplified !!!
+        cursor = super()._cursor(name=name)
+        tenant = get_active_tenant()
+        schemas = get_schemas_from_tenant(tenant)
+        search_path = ",".join(schemas)
+        cursor.execute(f"SET search_path = {search_path}")
+        return cursor
+```
+
+---
+
+Requires a database router in order to control which models are migrated on which schemas.
+
+```python
+class SemiIsolatedTenantsRouter:
+    def allow_migrate(self, db, app_label, model_name=None,
+                      **hints):
+        tenant = get_active_tenant()
+        if tenant is not None:
+*           return app_is_tenant_specific(app_label)
+*       return app_is_shared(app_label)
+```
+
+---
+
+**.green[Benefits]**
+
+-   You get tenant isolation out of the box.
+-   Easiest path to adapt an existing codebase.
+
+**.red[Limitations]**
+
+-   Extra care to define shared apps and tenant specific apps.
+-   Extra care to define where to put users, sessions and content types.
 
 ---
 
@@ -447,18 +525,100 @@ layout: false
 
 ## Does it scale?
 
-You mean, in which dimension?
+--
 
--   Number of tenants
--   Development boilerplate
--   Deployment hassle
+.warning[🔥 Yes and no!]
+
+--
+
+.left-column-66[Hit me in the Q/A because this deserves more than a slide...]
+.right-column-33[.right[![Young boy after food fight](images/food-fight.png)]]
 
 ---
 
 class: middle
 layout: false
 
-# Routing requests to tenants
+# Requests and URL reversing
+
+---
+
+layout: true
+
+## Activating a tenant from the incoming request
+
+---
+
+-   Inferred from the user
+-   Stored in the session
+-   Specified in the headers
+-   Specified in the URL
+    -   Via subdomain
+    -   Via subfolder
+    -   Via query parameter
+
+.box[A tenant can be activated from an incoming request via middleware]
+
+---
+
+```python
+def TenantFromSessionMiddleware(get_response):
+    def middleware(request):
+*       tenant = get_tenant_from_session(request.session)
+        if tenant:
+            set_active_tenant(tenant)
+        return get_response(request)
+    return middleware
+```
+
+.box[Middleware with different retrieval methods could be chained]
+
+---
+
+.warning[The order of middleware is important!]
+
+-   If it depends on the session it must go after `SessionMiddleware`.
+-   If it depends on the user it must go after `AuthenticationMiddleware`.
+-   If users depend on the tenant, then the tenant middleware must go before `AuthenticationMiddleware`.
+
+---
+
+layout: true
+
+## Reversing tenant-aware URLs
+
+---
+
+A bigger challenge actually is:
+
+.box[How to reverse URLs in Django so that the tenant is included?]
+
+For some cases it's simply not possible:
+
+-   Inferred from the user
+-   Stored in the session
+-   Specified in the headers
+
+---
+
+The only possible way is when the tenant is inferred from the URL itself:
+
+-   Via subdomain
+-   Via subfolder
+-   Via query parameter
+
+.warning[But it's not trivial either]
+
+---
+
+**Via subdomain**<br/>
+Django only reverses the path, so the full domain of the tenant must be prepended.
+
+**Via subfolder**<br/>
+In order to abstract away the beginning of the path, <u>additional wizardry</u> must be performed.
+
+**Via query parameter**<br/>
+All URLs must be appended with the query parameter.
 
 ---
 
@@ -469,10 +629,62 @@ layout: false
 
 ---
 
-class: middle
-layout: false
+## Admin site
 
-# Cross-tenant security
+-   For the URL it comes as part of your tenant routing scheme
+-   For adjusting the models that are available to edit, you might need to create a custom admin site.
+
+---
+
+## Cache
+
+You can define a tenant-specific cache key function:
+
+```python
+# settings.py
+CACHES = {
+    "default": {
+        ...
+        "KEY_FUNCTION": "myproject.cache.get_key_from_tenant",
+    }
+}
+
+# myproject/cache.py
+def get_key_from_tenant(key, key_prefix, version):
+    tenant = get_active_tenant()
+    return "{}:{}:{}:{}".format(tenant, key_prefix, version, key)
+```
+
+---
+
+## Celery tasks
+
+You can just pass the tenant to activate as one of your task parameters.
+
+---
+
+## Channels (websockets)
+
+-   Requires (additional) custom middleware for activating tenant from request and passing tenant as part of the scope.
+-   Requires naming your consumer groups including the tenant (for proper cross-tenant group isolation)
+
+.warning[This requires some boilerplate code]
+
+---
+
+## Management commands
+
+-   For custom management commands, you need to include a tenant argument, so you can activate the tenant before executing the command.
+-   For existing, non tenant-aware commands, you can define a special management command that takes a tenant argument and another management command with its arguments, so that you can activate the tenant before calling the other management command.
+
+.warning[This gets trickier the more elegant]
+
+---
+
+## File storage
+
+-   You can define a custom tenant storage that organizes files per tenant.
+-   If cross-tenant file access is a security problem for you, you will need a custom view to act as proxy for files and decide if the incoming request has access to the requested file.
 
 ---
 
@@ -480,6 +692,12 @@ class: middle
 layout: false
 
 # Yet another package for this
+
+---
+
+## Available packages
+
+https://djangopackages.org/grids/g/multi-tenancy/
 
 ---
 

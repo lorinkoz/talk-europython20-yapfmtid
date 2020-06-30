@@ -19,7 +19,7 @@ h3 {
 .remark-code,
 .remark-inline-code {
     font-family: Consolas;
-    font-size: 28px;
+    font-size: 26px;
 }
 
 .left-column {
@@ -107,4 +107,8 @@ h3 {
 
 .red {
     color: crimson;
+}
+
+.green {
+    color: darkgreen;
 }

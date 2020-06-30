@@ -10,7 +10,7 @@ h3 {
     background: url("../images/noisy.png");
     background-color: white;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 36px;
+    font-size: 34px;
     color: #333333;
     border-left: 1em solid darkslategray;
     padding: 1em 3em;
@@ -22,12 +22,56 @@ h3 {
     font-size: 28px;
 }
 
+.left-column {
+    width: 49%;
+    float: left;
+}
+.right-column {
+    width: 49%;
+    float: right;
+}
+
+.left-column-33 {
+    width: 33%;
+    float: left;
+}
+.right-column-66 {
+    width: 66%;
+    float: right;
+}
+
+.left-column-66 {
+    width: 66%;
+    float: left;
+}
+.right-column-33 {
+    width: 33%;
+    float: right;
+}
+
+.right-column ~ p {
+    clear: both;
+}
+.right-column ~ ul {
+    clear: both;
+}
+
 .box {
     font-family: Bahnschrift;
     margin: 0.5em 0;
     padding: 0.5em;
     padding-left: 1em;
     border-left: 0.5em solid darkslategray;
+    display: block;
+    background: rgba(100, 100, 100, 0.1);
+}
+
+.warning {
+    font-family: Bahnschrift;
+    margin: 0.5em 0;
+    padding: 0.5em;
+    padding-left: 1em;
+    border-left: 0.5em solid darkred;
     display: block;
     background: rgba(100, 100, 100, 0.1);
 }
@@ -59,4 +103,8 @@ h3 {
 
 .ref:after {
     content: "]";
+}
+
+.red {
+    color: crimson;
 }

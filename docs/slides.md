@@ -16,7 +16,7 @@ Lorenzo Peña &middot; @lorinkoz
     - Database, models and managers
     - Requests and URL reversing
     - The scope of everything else
-4. Yet another package for this
+4. Yet another package for this?
 
 ---
 
@@ -195,7 +195,7 @@ Yes, but...
 
 ---
 
--   There is a number of solid packages to help with the multi-tenancy problem in Django.
+-   There are solid packages to help with the multi-tenancy problem in Django.
 -   The whole idea of this talk came from my experience forking one of those packages.
 
 --
@@ -245,11 +245,14 @@ tenant = get_active_tenant()
 
 .box[What type do we use to grab and say:<br/>Here, this instance is a tenant?]
 
+???
+Here we'll have to explain that an instance of a model might not be sufficient.
+
 ---
 
 .warning[🤔 What if, for some operation, there is **no active tenant**?]
 
-We will have to answer these questions in a case by case basis:
+We will have to answer some questions in a case by case basis:
 
 -   Does this operation have sense in a tenant agnostic way?
 -   Should we interpret the lack of tenant as an indication that the operation must be performed on all tenants?
@@ -363,11 +366,11 @@ class IsolatedTenantsRouter:
 
 ---
 
-**.green[👍🏽 Benefits]**
+**.green[Benefits]**
 
 -   Optimized for isolation.
 
-**.red[👀 Limitations]**
+**.red[Limitations]**
 
 -   No cross-tenant relations.
 -   No relation between tenants and shared data.
@@ -458,11 +461,11 @@ The good news is that:
 
 ---
 
-**.green[👍🏽 Benefits]**
+**.green[Benefits]**
 
 -   Optimized for scalability.
 
-**.red[👀 Limitations]**
+**.red[Limitations]**
 
 -   Extra care to define tenant annotated models.
 -   Extra care with tenant annotated queries.
@@ -544,11 +547,11 @@ class SemiIsolatedTenantsRouter:
 
 ---
 
-**.green[👍🏽 Benefits]**
+**.green[Benefits]**
 
 -   Optimized for isolation.
 
-**.red[👀 Limitations]**
+**.red[Limitations]**
 
 -   Extra care to define shared apps and tenant specific apps.
 -   Extra care to define where to put users, sessions and content types.
@@ -749,7 +752,7 @@ You can just pass the tenant to activate as one of your task parameters.
 class: middle
 layout: false
 
-# Yet another package for this
+# Yet another package for this?
 
 ---
 
@@ -798,6 +801,8 @@ layout: false
 --
 
 .box[⭐ Come, we need .emph[you]!]
+
+.right[![Figurine of Neo](images/neo.png)]
 
 ---
 

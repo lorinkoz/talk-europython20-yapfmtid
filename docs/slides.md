@@ -31,6 +31,10 @@ layout: false
 
 .center[![Dinosaur in traffic with meteors falling](images/dinosaur-traffic.jpg)]
 
+.bottom[
+.footnote[This is arguably one of the most overused jokes of the year]
+]
+
 ---
 
 layout: true
@@ -174,9 +178,11 @@ Users are equivalent to tenants (similar to single-tenancy)
 
 ---
 
-layout: false
+layout: true
 
 ## How do we get to it?
+
+---
 
 Can I just start hacking my project?
 
@@ -188,8 +194,6 @@ Yes, but...
 .warning[🤯 There are non trivial parts]
 
 ---
-
-## Package first?
 
 -   There is a number of solid packages to help with the multi-tenancy problem in Django.
 -   The whole idea of this talk came from my experience forking one of those packages.
@@ -234,6 +238,15 @@ set_active_tenant(tenant)
 
 ---
 
+```python
+tenant = get_active_tenant()
+*print(type(tenant))
+```
+
+.box[What type do we use to grab and say:<br/>Here, this instance is a tenant?]
+
+---
+
 .warning[🤔 What if, for some operation, there is **no active tenant**?]
 
 We will have to answer these questions in a case by case basis:
@@ -245,6 +258,8 @@ We will have to answer these questions in a case by case basis:
 ---
 
 Every part of the framework needs to be able to operate in the scope of the active tenant:
+
+--
 
 .left-column[
 
@@ -262,7 +277,9 @@ Every part of the framework needs to be able to operate in the scope of the acti
 -   File storage
     ]
 
-And everything else...
+--
+
+.red[And everything else...]
 
 ---
 
@@ -346,7 +363,11 @@ class IsolatedTenantsRouter:
 
 ---
 
-**.red[Limitations]**
+**.green[👍🏽 Benefits]**
+
+-   Optimized for isolation.
+
+**.red[👀 Limitations]**
 
 -   No cross-tenant relations.
 -   No relation between tenants and shared data.
@@ -431,16 +452,29 @@ This quickly escalates to:
 
 --
 
-The good news is:
+The good news is that:
 
-.box[It's possible to automatically inject the tenant in most use cases, but this requires <u>additional wizardry</u>]
+.box[💡 It's possible to automatically inject the tenant in most use cases, but this requires .emph[additional wizardry]]
+
+---
+
+**.green[👍🏽 Benefits]**
+
+-   Optimized for scalability.
+
+**.red[👀 Limitations]**
+
+-   Extra care to define tenant annotated models.
+-   Extra care with tenant annotated queries.
 
 ---
 
 **.green[Recommendations]**
 
--   Put all your tenant specific queries in a single place.
+-   Put all your tenant anotated queries in a single place.
 -   Unit test each one of them, and make the test suite fail if any query is untested.
+
+--
 
 .box[🧸 Tests are a soft pillow]
 
@@ -457,6 +491,11 @@ Use PostgreSQL schemas.ref[1] to isolate tenants within a single database.
 .bottom[
 .footnote[.ref[1] https://www.postgresql.org/docs/9.1/ddl-schemas.html]
 ]
+
+--
+
+-   PostgreSQL schemas are an intermediary layer between database and tables.
+-   Tables are scoped by schemas, and can be duplicated across schemas
 
 --
 
@@ -484,8 +523,8 @@ class DatabaseWrapper(postgresql.DatabaseWrapper):
         cursor = super()._cursor(name=name)
         tenant = get_active_tenant()
         schemas = get_schemas_from_tenant(tenant)
-        search_path = ",".join(schemas)
-        cursor.execute(f"SET search_path = {search_path}")
+*       search_path = ",".join(schemas)
+*       cursor.execute(f"SET search_path = {search_path}")
         return cursor
 ```
 
@@ -505,12 +544,11 @@ class SemiIsolatedTenantsRouter:
 
 ---
 
-**.green[Benefits]**
+**.green[👍🏽 Benefits]**
 
--   You get tenant isolation out of the box.
--   Easiest path to adapt an existing codebase.
+-   Optimized for isolation.
 
-**.red[Limitations]**
+**.red[👀 Limitations]**
 
 -   Extra care to define shared apps and tenant specific apps.
 -   Extra care to define where to put users, sessions and content types.
@@ -531,7 +569,7 @@ layout: false
 
 --
 
-.left-column-66[Hit me in the Q/A because this deserves more than a slide...]
+.left-column-66[Hit me in the Q&A because this deserves more than a slide...]
 .right-column-33[.right[![Young boy after food fight](images/food-fight.png)]]
 
 ---
@@ -549,15 +587,27 @@ layout: true
 
 ---
 
+.left-column[
+
+**Captured in the request**
+
 -   Inferred from the user
 -   Stored in the session
 -   Specified in the headers
--   Specified in the URL
-    -   Via subdomain
-    -   Via subfolder
-    -   Via query parameter
+    ]
 
-.box[A tenant can be activated from an incoming request via middleware]
+.right-column[
+
+**Captured in the URL**
+
+-   Via subdomain
+-   Via subfolder
+-   Via query parameter
+    ]
+
+--
+
+.box[A tenant can be activated from an incoming request<br/>via 😎 middleware]
 
 ---
 
@@ -571,15 +621,19 @@ def TenantFromSessionMiddleware(get_response):
     return middleware
 ```
 
-.box[Middleware with different retrieval methods could be chained]
+--
+
+.box[💡 Middleware with different retrieval methods<br/>can be chained]
 
 ---
 
-.warning[The order of middleware is important!]
+.warning[⚠️ The order of middleware is important!]
+
+--
 
 -   If it depends on the session it must go after `SessionMiddleware`.
 -   If it depends on the user it must go after `AuthenticationMiddleware`.
--   If users depend on the tenant, then the tenant middleware must go before `AuthenticationMiddleware`.
+-   If instead, users depend on the active tenant, then the tenant middleware must go before `AuthenticationMiddleware`.
 
 ---
 
@@ -589,25 +643,29 @@ layout: true
 
 ---
 
-A bigger challenge actually is:
+--
 
-.box[How to reverse URLs in Django so that the tenant is included?]
+.box[🙋‍♀️ How to reverse URLs so that the tenant is included?]
+
+--
 
 For some cases it's simply not possible:
 
--   Inferred from the user
--   Stored in the session
--   Specified in the headers
+-   ❌ Inferred from the user
+-   ❌ Stored in the session
+-   ❌ Specified in the headers
 
 ---
 
 The only possible way is when the tenant is inferred from the URL itself:
 
--   Via subdomain
--   Via subfolder
--   Via query parameter
+-   ✔️ Via subdomain
+-   ✔️ Via subfolder
+-   ✔️ Via query parameter
 
-.warning[But it's not trivial either]
+--
+
+.warning[👀 But it's not trivial either]
 
 ---
 
@@ -615,7 +673,7 @@ The only possible way is when the tenant is inferred from the URL itself:
 Django only reverses the path, so the full domain of the tenant must be prepended.
 
 **Via subfolder**<br/>
-In order to abstract away the beginning of the path, <u>additional wizardry</u> must be performed.
+In order to abstract away the beginning of the path in a transparent way, .emph[additional wizardry] must be performed.
 
 **Via query parameter**<br/>
 All URLs must be appended with the query parameter.
@@ -668,7 +726,7 @@ You can just pass the tenant to activate as one of your task parameters.
 -   Requires (additional) custom middleware for activating tenant from request and passing tenant as part of the scope.
 -   Requires naming your consumer groups including the tenant (for proper cross-tenant group isolation)
 
-.warning[This requires some boilerplate code]
+.warning[👀 This requires some boilerplate code]
 
 ---
 
@@ -677,7 +735,7 @@ You can just pass the tenant to activate as one of your task parameters.
 -   For custom management commands, you need to include a tenant argument, so you can activate the tenant before executing the command.
 -   For existing, non tenant-aware commands, you can define a special management command that takes a tenant argument and another management command with its arguments, so that you can activate the tenant before calling the other management command.
 
-.warning[This gets trickier the more elegant]
+.warning[⚠️ This gets trickier the more elegant]
 
 ---
 
@@ -695,9 +753,51 @@ layout: false
 
 ---
 
+layout: true
+
 ## Available packages
 
+---
+
+Multi-tenancy grid of **djangopackages.org**
+
 https://djangopackages.org/grids/g/multi-tenancy/
+
+--
+
+.warning[⚠️ Check activity and compatibility of packages]
+
+--
+
+.box[🙏 Please add yours if it's not there]
+
+---
+
+**Shared database**
+
+-   citusdata/django-multitenant
+-   raphaelm/django-scopes
+
+--
+
+**Semi-isolated database**
+
+-   bernardopires/django-tenant-schemas
+-   tomturner/django-tenants
+
+---
+
+layout: false
+
+## Contribute back
+
+-   Do you have specific requirements that are not covered in any of the existing packages?
+-   Can the community benefit from those?
+-   Can you make it work in a compatible way?
+
+--
+
+.box[⭐ Come, we need .emph[you]!]
 
 ---
 

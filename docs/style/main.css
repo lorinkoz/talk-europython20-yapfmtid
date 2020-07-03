@@ -112,3 +112,16 @@ h3 {
 .green {
     color: darkgreen;
 }
+
+.emph {
+    text-decoration: underline;
+}
+
+a:link,
+a:active,
+a:visited,
+a:focus {
+    color: steelblue;
+    text-decoration: none;
+    font-family: Consolas;
+}

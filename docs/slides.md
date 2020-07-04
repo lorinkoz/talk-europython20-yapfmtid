@@ -241,18 +241,43 @@ set_active_tenant(tenant)
 ---
 
 ```python
-tenant = get_active_tenant()
-*print(type(tenant))
+from asgiref.local import Local
+
+
+_active = Local()
+
+def get_active_tenant():
+    return getattr(_active, "value", None)
+
+def set_active_tenant(tenant):
+    _active.value = tenant
 ```
 
-.box[What type do we use to grab and say:<br/>Here, this object is a tenant?]
+--
+
+.warning[⚠️ In general, this should be avoided]
+
+---
+
+```python
+tenant = get_active_tenant()
+
+# What do we expect to be the result of the next line?
+print(type(tenant))
+```
+
+--
+
+.box[💡 Tenants objects should be abstracted above model instances]
 
 ???
 Here we'll have to explain that an instance of a model might not be sufficient.
 
 ---
 
-.warning[🤔 What if, for some operation, there is **no active tenant**?]
+.box[🤔 What if, for some operation, there is **no active tenant**?]
+
+--
 
 We will have to answer some questions in a case by case basis:
 
@@ -431,11 +456,8 @@ Scope all queries with active tenant:
 Order.objects.create(tenant=get_active_tenant(), ...)
 Order.objects.filter(tenant=get_active_tenant(), ...)
 
-# But also in related queries
-some_customer.orders.filter(
-    order__tenant=get_active_tenant(),
-    ...
-)
+# In related queries
+some_customer.orders.filter(order__tenant=get_active_tenant(), ...)
 ```
 
 ---

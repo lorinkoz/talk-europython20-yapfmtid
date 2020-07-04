@@ -1,7 +1,8 @@
 h1,
 h2,
 h3 {
-    font-family: Bahnschrift;
+    font-family: Bahnschrift, "Trebuchet MS", "Lucida Sans Unicode",
+        "Lucida Grande", "Lucida Sans", Arial, sans-serif;
     text-shadow: 1px 1px 2px darkslategray;
     font-weight: normal;
 }
@@ -18,7 +19,7 @@ h3 {
 
 .remark-code,
 .remark-inline-code {
-    font-family: Consolas;
+    font-family: Consolas, "Courier New", Courier, monospace;
     font-size: 26px;
 }
 
@@ -57,7 +58,8 @@ h3 {
 }
 
 .box {
-    font-family: Bahnschrift;
+    font-family: Bahnschrift, "Trebuchet MS", "Lucida Sans Unicode",
+        "Lucida Grande", "Lucida Sans", Arial, sans-serif;
     margin: 0.5em 0;
     padding: 0.5em;
     padding-left: 1em;
@@ -67,7 +69,8 @@ h3 {
 }
 
 .warning {
-    font-family: Bahnschrift;
+    font-family: Bahnschrift, "Trebuchet MS", "Lucida Sans Unicode",
+        "Lucida Grande", "Lucida Sans", Arial, sans-serif;
     margin: 0.5em 0;
     padding: 0.5em;
     padding-left: 1em;
@@ -115,6 +118,10 @@ h3 {
 
 .emph {
     text-decoration: underline;
+}
+
+table td {
+    padding: 0em 0.5em;
 }
 
 a:link,

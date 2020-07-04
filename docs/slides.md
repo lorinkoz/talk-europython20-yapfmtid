@@ -45,7 +45,7 @@ layout: true
 
 ---
 
--   Mature, solid and battle tested.
+-   Mature, solid and battle tested
 -   For perfectionists (like you)
 -   For people with deadlines (like you)
 -   Vast ecosystem - over 4k projects.ref[1]
@@ -57,11 +57,13 @@ layout: true
 ---
 
 -   Bright minds are second-guessing the modern web.ref[1]
--   People are doing email services today in vanilla monolith makers.ref[2]
+-   People are doing email services in vanilla monolith makers.ref[2]
+-   There is progress with Django template reactivity.ref[3]
 
 .bottom[
 .footnote[.ref[1] https://macwright.org/2020/05/10/spa-fatigue.html]
 .footnote[.ref[2] https://twitter.com/dhh/status/1275901955995385856?s=20]
+.footnote[.ref[3] https://github.com/edelvalle/reactor]
 ]
 
 ---
@@ -160,19 +162,19 @@ layout: true
 
 ---
 
-Users exist **within** the context of tenants
+Users exist **within** the context of tenants (one to many)
 
 .center[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
 
 ---
 
-Users exist **outside** the context of tenants
+Users exist **outside** the context of tenants (many to many)
 
 .center[![Diagram of users outside tenants](images/diagram-users-out-tenants.png)]
 
 ---
 
-Users are equivalent to tenants (similar to single-tenancy)
+Users are tenants (one to one, equivalent to single-tenancy)
 
 .center[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
 
@@ -243,7 +245,7 @@ tenant = get_active_tenant()
 *print(type(tenant))
 ```
 
-.box[What type do we use to grab and say:<br/>Here, this instance is a tenant?]
+.box[What type do we use to grab and say:<br/>Here, this object is a tenant?]
 
 ???
 Here we'll have to explain that an instance of a model might not be sufficient.
@@ -254,9 +256,9 @@ Here we'll have to explain that an instance of a model might not be sufficient.
 
 We will have to answer some questions in a case by case basis:
 
--   Does this operation have sense in a tenant agnostic way?
--   Should we interpret the lack of tenant as an indication that the operation must be performed on all tenants?
 -   Is the lack of a tenant a bug in this context?
+-   Does this operation make sense in a tenant agnostic way?
+-   Should we interpret the lack of tenant as an indication that the operation must be performed on all tenants?
 
 ---
 
@@ -268,7 +270,7 @@ Every part of the framework needs to be able to operate in the scope of the acti
 
 -   Database access
 -   URL reversing
--   Admin interface
+-   Admin site
 -   Cache
     ]
 
@@ -320,7 +322,7 @@ layout: true
 
 ---
 
-Multi-database configuration in Django settings
+Multi-database configuration in Django settings:
 
 ```python
 DATABASES = {
@@ -334,14 +336,17 @@ DATABASES = {
 
 ---
 
-Queries need to define the active tenant.
+Queries need to define the active tenant:
 
 ```python
-order = Order(...)
-order.save(using="tenant1")
+tenant = get_active_tenant()
+active_db = get_database_for_tenant(tenant)
 
-Order.objects.using("tenant2").filter(...)
-Order.objects.db_manager("tenant2").do_something(...)
+order = Order(...)
+order.save(using=active_db)
+
+Order.objects.using(active_db).filter(...)
+Order.objects.db_manager(active_db).do_something(...)
 ```
 
 --
@@ -356,12 +361,12 @@ Django has a thing called database routers
 class IsolatedTenantsRouter:
 
     def db_for_read(self, model, **hints):
-        active_tenant = get_active_tenant()
-        return get_database_for_tenant(active_tenant)
+        tenant = get_active_tenant()
+        return get_database_for_tenant(tenant)
 
     def db_for_write(self, model, **hints):
-        active_tenant = get_active_tenant()
-        return get_database_for_tenant(active_tenant)
+        tenant = get_active_tenant()
+        return get_database_for_tenant(tenant)
 ```
 
 ---
@@ -419,7 +424,7 @@ order.save()
 
 ---
 
-Use active tenant in all queries:
+Scope all queries with active tenant:
 
 ```python
 # In regular queries
@@ -498,7 +503,7 @@ Use PostgreSQL schemas.ref[1] to isolate tenants within a single database.
 --
 
 -   PostgreSQL schemas are an intermediary layer between database and tables.
--   Tables are scoped by schemas, and can be duplicated across schemas
+-   Tables are scoped by schemas, and can be duplicated across schemas.
 
 --
 
@@ -506,7 +511,7 @@ Use PostgreSQL schemas.ref[1] to isolate tenants within a single database.
 
 ---
 
-The concept of `search_path` allows for interesting combinations of isolated and shared data.
+The concept of **search path** allows for interesting combinations of isolated and shared data.
 
 --
 
@@ -525,8 +530,8 @@ class DatabaseWrapper(postgresql.DatabaseWrapper):
     def _cursor(self, name=None):  # Over simplified !!!
         cursor = super()._cursor(name=name)
         tenant = get_active_tenant()
-        schemas = get_schemas_from_tenant(tenant)
-*       search_path = ",".join(schemas)
+*       schemas = get_schemas_from_tenant(tenant)
+        search_path = ",".join(schemas)
 *       cursor.execute(f"SET search_path = {search_path}")
         return cursor
 ```
@@ -550,15 +555,20 @@ class SemiIsolatedTenantsRouter:
 **.green[Benefits]**
 
 -   Optimized for isolation.
+-   Allows relations between tenants and shared data.
 
 **.red[Limitations]**
 
+-   No cross tenant relations.
 -   Extra care to define shared apps and tenant specific apps.
 -   Extra care to define where to put users, sessions and content types.
 
 ---
 
 .center[![Meme of crazy lady and cat about schemas and migrations](images/cat-lady-meme-schemas.png)]
+
+???
+Explain that migrations must be run in all schemas, takes discipline to do zero downtime upgrades.
 
 ---
 
@@ -572,7 +582,7 @@ layout: false
 
 --
 
-.left-column-66[Hit me in the Q&A because this deserves more than a slide...]
+.left-column-66[Hit me in the Q&A because this deserves more than a slide. We can talk about sharding too...]
 .right-column-33[.right[![Young boy after food fight](images/food-fight.png)]]
 
 ---
@@ -654,17 +664,21 @@ layout: true
 
 For some cases it's simply not possible:
 
--   ❌ Inferred from the user
--   ❌ Stored in the session
--   ❌ Specified in the headers
+|     |                          |
+| --- | ------------------------ |
+| ❌  | Inferred from the user   |
+| ❌  | Stored in the session    |
+| ❌  | Specified in the headers |
 
 ---
 
 The only possible way is when the tenant is inferred from the URL itself:
 
--   ✔️ Via subdomain
--   ✔️ Via subfolder
--   ✔️ Via query parameter
+|     |                     |                               |
+| --- | ------------------- | ----------------------------- |
+| ✔️  | Via subdomain       | `tenant1.example.com/view/`   |
+| ✔️  | Via subfolder       | `example.com/tenant1/view/`   |
+| ✔️  | Via query parameter | `example.com/view/?t=tenant1` |
 
 --
 
@@ -692,7 +706,7 @@ layout: false
 
 ## Admin site
 
--   For the URL it comes as part of your tenant routing scheme
+-   For the URL it comes as part of your tenant routing scheme.
 -   For adjusting the models that are available to edit, you might need to create a custom admin site.
 
 ---
@@ -720,13 +734,21 @@ def get_key_from_tenant(key, key_prefix, version):
 
 ## Celery tasks
 
-You can just pass the tenant to activate as one of your task parameters.
+You can pass the tenant to activate as one of your task parameters:
+
+```python
+@app.task(bind=True)
+def some_celery_task(self, tenant_id, ...):
+    tenant = get_tenant_from_id(tenant_id)
+    set_active_tenant(tenant)
+    ...
+```
 
 ---
 
 ## Channels (websockets)
 
--   Requires (additional) custom middleware for activating tenant from request and passing tenant as part of the scope.
+-   Requires custom middleware to activate tenant from request.
 -   Requires naming your consumer groups including the tenant (for proper cross-tenant group isolation)
 
 .warning[👀 This requires some boilerplate code]
@@ -735,8 +757,8 @@ You can just pass the tenant to activate as one of your task parameters.
 
 ## Management commands
 
--   For custom management commands, you need to include a tenant argument, so you can activate the tenant before executing the command.
--   For existing, non tenant-aware commands, you can define a special management command that takes a tenant argument and another management command with its arguments, so that you can activate the tenant before calling the other management command.
+-   For new management commands, you can include a tenant argument, so you can activate the tenant before executing the command.
+-   For existing, non tenant-aware commands, you can define a special command wrapper.
 
 .warning[⚠️ This gets trickier the more elegant]
 
@@ -772,21 +794,24 @@ https://djangopackages.org/grids/g/multi-tenancy/
 
 --
 
-.box[🙏 Please add yours if it's not there]
+.box[🙏 Add yours if it's not there]
 
 ---
 
 **Shared database**
 
--   citusdata/django-multitenant
--   raphaelm/django-scopes
+-   [citusdata/django-multitenant](https://github.com/citusdata/django-multitenant)
+-   [raphaelm/django-scopes](https://github.com/raphaelm/django-scopes)
 
 --
 
 **Semi-isolated database**
 
--   bernardopires/django-tenant-schemas
--   tomturner/django-tenants
+-   [bernardopires/django-tenant-schemas](https://github.com/bernardopires/django-tenant-schemas)
+-   [tomturner/django-tenants](https://github.com/tomturner/django-tenants)
+
+???
+Packages are opinionated, primarily from the database architecture, but also from tenant routing.
 
 ---
 

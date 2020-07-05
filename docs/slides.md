@@ -3,6 +3,8 @@ class: middle
 
 # Yet another package for<br/>multi-tenancy in Django
 
+![Badges: Cuba, EuroPython 2020 and Django](images/badges.png)
+
 Lorenzo Peña &middot; @lorinkoz
 
 ---

@@ -140,10 +140,6 @@ The world is divided in two kinds of Djangonauts:
 class: center middle
 layout: false
 
-## Take the .red[red] pill, Neo
-
-![Morpheus watching as Neo decides whether or not to take the red pill](images/neo-red-pill.png)
-
 ---
 
 ## What is multi-tenancy
@@ -850,8 +846,6 @@ layout: false
 --
 
 .box[⭐ Come, we need .emph[you]!]
-
-.right[![Figurine of Neo](images/neo.png)]
 
 ---
 

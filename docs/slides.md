@@ -9,26 +9,6 @@ Lorenzo Peña &middot; @lorinkoz
 
 ---
 
-## The agenda
-
-1. Django in 2020
-2. Django, multi-tenancy and you
-3. The challanges ahead
-    - The active tenant
-    - Database, models and managers
-    - Requests and URL reversing
-    - The scope of everything else
-4. Yet another package for this?
-
----
-
-class: middle
-layout: false
-
-# Django in 2020
-
----
-
 ## 2020 is going great so far
 
 .center[![Dinosaur in traffic with meteors falling](images/dinosaur-traffic.jpg)]
@@ -48,8 +28,7 @@ layout: true
 ---
 
 -   Mature, solid and battle tested
--   For perfectionists (like you)
--   For people with deadlines (like you)
+-   For perfectionists with deadlines (like you)
 -   Vast ecosystem - over 4k projects.ref[1]
 
 .bottom[
@@ -87,66 +66,74 @@ What do Django, multi-tenancy and you have in common?
 
 The world is divided in two kinds of Djangonauts:
 
--   Those who **have done** multi-tenancy.
+-   Those who **are doing** multi-tenancy.
 -   Those who **will be doing** multi-tenancy anytime soon.
 
 --
 
-.box[🔥 Hot take?]
+.box[🔥 Multi-tenancy is inevitable]
 
 --
 
-.right[Well...]
+.box[🦉 You don't come to it, it comes to you]
 
 ---
 
-.top[
-![Reddit question about multi-tenancy in Django](images/django-mt-reddit.png)
-]
+class: middle center
+
+![Meme of Boromir "One does not simply walk into Mordor" about multi-tenancy](images/boromir-mordor-meme-multi-tenancy.png)
+
+???
+
+-   Lots of things to do and do right
+-   Some parts are non-trivial
 
 ---
 
-.top[
-![Reddit question about multi-tenancy in Django](images/django-mt-reddit-1.png)
-]
+layout: true
 
-.box[Sooner or later, you're going to have a<br/>🤑 multi-million dollar idea]
+## A package for multi-tenancy
 
 ---
 
-.top[
-![Reddit question about multi-tenancy in Django](images/django-mt-reddit-2.png)
-]
-.box[And you're going to need some form of<br/>🏘️ multi-tenancy for it]
+-   There are multiple packages for handling multi-tenancy.
+-   Yes, I made one of them (a fork, actually)
+
+--
+
+.box[🦉 But none of them solves it all]
+
+--
+
+-   Let's pretend we're going to do it from scratch instead.
+-   You'll get a package, but not one you can install.
 
 ---
 
-.top[
-![Reddit question about multi-tenancy in Django](images/django-mt-reddit-3.png)
-]
+<p>Tired:</p>
 
-.box[And as crazy as it may sound, in order to implement it, you're going to use 🥁 Django]
+> Give someone a fish and you feed them for a day; teach someone to fish and you feed them for a lifetime.
 
----
+--
 
-.top[
-![Reddit question about multi-tenancy in Django](images/django-mt-reddit-4.png)
-]
+<p>Wired:</p>
 
-.box[So let's face it:<br/>🔥 This post may as well have been made by you]
+> Give someone a package for multi-tenancy and they will make a SaaS; teach someone the principles of multi-tenancy and they will be able to break the SaaS.
 
 ---
 
-class: center middle
+class: middle center
 layout: false
 
+![Meme of "Is this a pigeon?" about multi-tenancy](images/pigeon-meme-multi-tenancy.png)
+
 ---
 
-## What is multi-tenancy
+## A tiny bit of theory
 
-Software architecture in which a single instance of software runs on a server and serves multiple tenants.
+**Multi-tenancy:** Software architecture in which a single instance of software runs on a server and serves multiple tenants..ref[1]
 
-A tenant is a group of users who share a common access with specific privileges to the software instance..ref[1]
+**Tenant:** Group of users who share a common access with specific privileges to the software instance..ref[1]
 
 .bottom[
 .footnote[.ref[1] https://en.wikipedia.org/wiki/Multitenancy]
@@ -160,51 +147,21 @@ layout: true
 
 ---
 
-Users exist **within** the context of tenants (one to many)
+Users exist **within** the context of tenants:
 
 .center[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
 
 ---
 
-Users exist **outside** the context of tenants (many to many)
+Users exist **outside** the context of tenants:
 
 .center[![Diagram of users outside tenants](images/diagram-users-out-tenants.png)]
 
 ---
 
-Users are tenants (one to one, equivalent to single-tenancy)
+Users are equivalent tenants (similar to single-tenancy)
 
 .center[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
-
----
-
-layout: true
-
-## How do we get to it?
-
----
-
-Should you just start hacking your project?
-
---
-
-Yes, but...
-
-.warning[🤹 There are many things to do, and do right]
-.warning[🤯 There are non trivial parts]
-
----
-
--   There are solid packages to help with the multi-tenancy problem in Django.
--   The whole idea of this talk came from my experience forking one of those packages.
-
---
-
-.box[✋ But let's not take a package-first approach]
-
---
-
-Instead, let's pretend we're going to implement multi-tenancy from scratch, without the help of any package.
 
 ---
 
@@ -585,7 +542,10 @@ class SemiIsolatedTenantsRouter:
 
 ---
 
-.center[![Meme of crazy lady and cat about schemas and migrations](images/cat-lady-meme-schemas.png)]
+class: middle center
+layout: false
+
+![Meme of crazy lady and cat about schemas and migrations](images/cat-lady-meme-schemas.png)
 
 ???
 Explain that migrations must be run in all schemas, takes discipline to do zero downtime upgrades.
@@ -794,7 +754,7 @@ def some_celery_task(self, tenant_id, ...):
 class: middle
 layout: false
 
-# Yet another package for this?
+# TL;DR
 
 ---
 

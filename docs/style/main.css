@@ -132,3 +132,11 @@ a:focus {
     text-decoration: none;
     font-family: Consolas;
 }
+
+blockquote {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-style: italic;
+    color: steelblue;
+    padding-left: 1em;
+    border-left: 5px solid steelblue;
+}

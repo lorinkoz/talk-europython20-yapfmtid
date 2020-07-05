@@ -184,7 +184,7 @@ layout: true
 
 ---
 
-Can I just start hacking my project?
+Should you just start hacking your project?
 
 --
 
@@ -221,7 +221,7 @@ layout: true
 
 ---
 
-We have to adjust our mindset:
+You have to adjust your mindset:
 
 .box[Most operations will now require a tenant to be considered 😎 **the active tenant**]
 
@@ -229,7 +229,7 @@ We have to adjust our mindset:
 
 There are things that are currently tracked by Django as an **active something** independent of the request / response cycle. For instance: **timezone** and **language**.
 
-We could use the same logic to also track the **active tenant**, so that we get at our disposal:
+The same idea is applicable to track the **active tenant**, so that you can have:
 
 ```python
 tenant = get_active_tenant()
@@ -253,15 +253,15 @@ def set_active_tenant(tenant):
 
 --
 
-.warning[⚠️ In general, this should be avoided]
+.warning[⚠️ The use of globals is generally discouraged]
 
 ---
 
 ```python
 tenant = get_active_tenant()
 
-# What do we expect to be the result of the next line?
-print(type(tenant))
+# What do you expect to be the result of the next line?
+*print(type(tenant))
 ```
 
 --
@@ -277,11 +277,11 @@ Here we'll have to explain that an instance of a model might not be sufficient.
 
 --
 
-We will have to answer some questions in a case by case basis:
+You will have to answer some questions in a case by case basis:
 
 -   Is the lack of a tenant a bug in this context?
 -   Does this operation make sense in a tenant agnostic way?
--   Should we interpret the lack of tenant as an indication that the operation must be performed on all tenants?
+-   Should you interpret the lack of tenant as an indication that the operation must be performed on all tenants?
 
 ---
 

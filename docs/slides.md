@@ -107,49 +107,6 @@ The world is divided in two kinds of Djangonauts:
 ---
 
 class: middle center
-
-![Meme of Boromir "One does not simply walk into Mordor" about multi-tenancy](images/boromir-mordor-meme-multi-tenancy.png)
-
-???
-
--   Lots of things to do and do right
--   Some parts are non-trivial
-
----
-
-layout: true
-
-## A package for multi-tenancy
-
----
-
--   There are multiple packages for handling multi-tenancy.
--   Yes, I made one of them (a fork, actually)
-
---
-
-.box[🦉 But none of them solves it all]
-
---
-
--   Let's pretend we're going to do it from scratch instead.
--   You'll get a package, but not one you can install.
-
----
-
-<p>Tired:</p>
-
-> Give someone a fish and you feed them for a day; teach someone to fish and you feed them for a lifetime.
-
---
-
-<p>Wired:</p>
-
-> Give them a package for a SaaS and they will make it; teach them the underlying principles and they will break it.
-
----
-
-class: middle center
 layout: false
 
 ![Meme of "Is this a pigeon?" about multi-tenancy](images/pigeon-meme-multi-tenancy.png)
@@ -199,6 +156,50 @@ Users exist **outside** the context of tenants:
 Users exist **as** tenants:
 
 .center[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
+
+---
+
+layout: false
+class: middle center
+
+![Meme of Boromir "One does not simply walk into Mordor" about multi-tenancy](images/boromir-mordor-meme-multi-tenancy.png)
+
+???
+
+-   Lots of things to do and do right
+-   Some parts are non-trivial
+
+---
+
+layout: true
+
+## A package for multi-tenancy
+
+---
+
+-   There are multiple packages for handling multi-tenancy.
+-   Yes, I made one of them (a fork, actually)
+
+--
+
+.box[🦉 But none of them solves it all]
+
+--
+
+-   Let's pretend we're going to do it from scratch instead.
+-   You'll get a package, but not one you can install.
+
+---
+
+<p>Tired:</p>
+
+> Give someone a fish and you feed them for a day; teach someone to fish and you feed them for a lifetime.
+
+--
+
+<p>Wired:</p>
+
+> Give them a package for a SaaS and they will make it; teach them the underlying principles and they will break it.
 
 ---
 
@@ -255,6 +256,7 @@ set_active_tenant(tenant)
 ---
 
 ```python
+# Drop-in replacement for threading.locals that works with asyncio
 from asgiref.local import Local
 
 
@@ -299,9 +301,9 @@ Here we'll have to explain that an instance of a model might not be sufficient.
 
 You will have to answer some questions in a case by case basis:
 
--   Is the lack of a tenant a bug in this context?
--   Does this operation make sense in a tenant agnostic way?
--   Should you interpret the lack of tenant as an indication that the operation must be performed on all tenants?
+-   Is it a bug?
+-   Does it make sense without a tenant?
+-   Does it imply all tenants are targeted?
 
 ---
 
@@ -623,7 +625,7 @@ layout: true
 | Tenant aggregations   | 😬       | 😃     | 😬            |
 | Database cost         | 🤑       | 🙂     | 🙂            |
 | Database migrations   | 😅       | 😃     | 😅😬          |
-| Overall scalability   | 😬       | 😃     | 🙂🤨😨        |
+| Overall scalability   | 😬       | 😃     | 🤨            |
 
 ---
 
@@ -684,9 +686,26 @@ def TenantFromSessionMiddleware(get_response):
 
 --
 
--   If it depends on the session it must go after `SessionMiddleware`.
--   If it depends on the user it must go after `AuthenticationMiddleware`.
--   If instead, users depend on the active tenant, then the tenant middleware must go before `AuthenticationMiddleware`.
+.left-column[
+
+```python
+SessionMiddleware
+*TenantFromSessionMiddleware
+AuthenticationMiddleware
+*TenantFromUserMiddleware
+```
+
+]
+
+.right-column[
+
+```python
+*StandaloneTenantMiddleware
+SessionMiddleware
+AuthenticationMiddleware
+```
+
+]
 
 ---
 
@@ -730,7 +749,7 @@ The only possible way is when the tenant is inferred from the URL itself:
 Django only reverses the path, so the full domain of the tenant must be prepended.
 
 **Via subfolder**<br/>
-In order to abstract away the beginning of the path in a transparent way, .emph[additional wizardry] must be performed.
+Required parameter of all URLs. In order to make it URLConf agnostic, a clever hack is required.
 
 **Via query parameter**<br/>
 All URLs must be appended with the query parameter.
@@ -791,6 +810,8 @@ def some_celery_task(self, tenant_id, ...):
 -   Requires custom middleware to activate tenant from request.
 -   Requires naming your consumer groups including the tenant (for proper cross-tenant group isolation)
 
+--
+
 .warning[👀 This requires some boilerplate code]
 
 ---
@@ -799,6 +820,8 @@ def some_celery_task(self, tenant_id, ...):
 
 -   For new management commands, you can include a tenant argument, so you can activate the tenant before executing the command.
 -   For existing, non tenant-aware commands, you can define a special command wrapper.
+
+--
 
 .warning[⚠️ This gets trickier the more elegant]
 
@@ -871,9 +894,9 @@ layout: false
 
 ---
 
-# And that's it!
+## And that's it!
 
-**We can keep in touch here:**
+##### We can keep in touch here:
 
 |         |                                                    |
 | ------- | -------------------------------------------------- |
@@ -881,7 +904,7 @@ layout: false
 | GitHub  | [github.com/lorinkoz](https://github.com/lorinkoz) |
 | Email   | [lorinkoz@gmail.com](mailto:lorinkoz@gmail.com)    |
 
-**Special thanks to:**
+##### Special thanks to:
 
 -   Russell Keith-Magee
 -   Raphael Michel

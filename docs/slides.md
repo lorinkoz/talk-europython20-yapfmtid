@@ -23,9 +23,9 @@ layout: true
 
 ## But so is Django <small>(no... seriously)</small>
 
-![Django motto](images/django.png)
-
 ---
+
+![Django motto](images/django.png)
 
 -   Mature, solid and battle tested
 -   For perfectionists with deadlines (like you)
@@ -37,26 +37,53 @@ layout: true
 
 ---
 
--   Bright minds are second-guessing the modern web.ref[1]
--   People are doing email services in vanilla monolith makers.ref[2]
--   There is progress with Django template reactivity.ref[3]
+.left-column[Bright minds are second-guessing the modern web..ref[1]]
+.right-column[.right[![Meme of developer adding tons of javascript to website](images/oil-javascript-meme.png)]]
 
 .bottom[
 .footnote[.ref[1] https://macwright.org/2020/05/10/spa-fatigue.html]
-.footnote[.ref[2] https://twitter.com/dhh/status/1275901955995385856?s=20]
-.footnote[.ref[3] https://github.com/edelvalle/reactor]
 ]
+
+---
+
+People are doing email services in vanilla monolith makers..ref[1]
+
+.center[![Tweet from DDH about the Hey stack](images/dhh-tweet-hey-stack.png)]
+
+.bottom[
+.footnote[.ref[1] https://twitter.com/dhh/status/1275901955995385856?s=20]
+]
+
+---
+
+Template reactivity in Django is gaining some traction..ref[1].ref[2]
+
+.center[![Screenshot of edelvalle/reactor on GitHub](images/django-reactor-github.png)]
+
+.bottom[
+.footnote[.ref[1] https://github.com/edelvalle/reactor]
+.footnote[.ref[2] https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html]
+]
+
+---
+
+class: middle center
+layout: false
+
+![Meme of Django lifting the heavy weight of 2020 decade](images/django-2020-meme.png)
+
+### Django is in great shape for the starting decade
 
 ---
 
 class: middle
 layout: false
 
-# Django, multi-tenancy and you
+# Django and multi-tenancy
 
 --
 
-What do Django, multi-tenancy and you have in common?
+What does it have to do with .emph[you]?
 
 ---
 
@@ -118,7 +145,7 @@ layout: true
 
 <p>Wired:</p>
 
-> Give someone a package for multi-tenancy and they will make a SaaS; teach someone the principles of multi-tenancy and they will be able to break the SaaS.
+> Give them a package for a SaaS and they will make it; teach them the underlying principles and they will break it.
 
 ---
 
@@ -129,15 +156,25 @@ layout: false
 
 ---
 
+layout: true
+
 ## A tiny bit of theory
-
-**Multi-tenancy:** Software architecture in which a single instance of software runs on a server and serves multiple tenants..ref[1]
-
-**Tenant:** Group of users who share a common access with specific privileges to the software instance..ref[1]
 
 .bottom[
 .footnote[.ref[1] https://en.wikipedia.org/wiki/Multitenancy]
 ]
+
+---
+
+**Multi-tenancy:** Software architecture in which a single instance of software runs on a server and serves multiple tenants..ref[1]
+
+.right[![Diagram of multi-tenanacy](images/diagram-multi-tenancy.png)]
+
+---
+
+**Tenant:** Group of users who share a common access with specific privileges to the software instance..ref[1]
+
+.right[![Diagram of tenants](images/diagram-tenant.png)]
 
 ---
 
@@ -159,7 +196,7 @@ Users exist **outside** the context of tenants:
 
 ---
 
-Users are equivalent tenants (similar to single-tenancy)
+Users exist **as** tenants:
 
 .center[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
 
@@ -178,9 +215,31 @@ layout: true
 
 ---
 
-You have to adjust your mindset:
+---
 
 .box[Most operations will now require a tenant to be considered 😎 **the active tenant**]
+
+--
+
+.left-column[
+
+-   Database access
+-   URL reversing
+-   Admin site
+-   Cache
+    ]
+
+.right-column[
+
+-   Channels (websockets)
+-   Management commands
+-   Celery tasks
+-   File storage
+    ]
+
+--
+
+.red[And everything else...]
 
 ---
 
@@ -223,7 +282,11 @@ tenant = get_active_tenant()
 
 --
 
-.box[💡 Tenants objects should be abstracted above model instances]
+.box[🙋 Are tenants always represented by a **tenant model**?]
+
+--
+
+.box[💡 Tenants might require a higher abstraction]
 
 ???
 Here we'll have to explain that an instance of a model might not be sufficient.
@@ -242,32 +305,6 @@ You will have to answer some questions in a case by case basis:
 
 ---
 
-Every part of the framework needs to be able to operate in the scope of the active tenant:
-
---
-
-.left-column[
-
--   Database access
--   URL reversing
--   Admin site
--   Cache
-    ]
-
-.right-column[
-
--   Channels (websockets)
--   Management commands
--   Celery tasks
--   File storage
-    ]
-
---
-
-.red[And everything else...]
-
----
-
 class: middle
 layout: false
 
@@ -275,30 +312,25 @@ layout: false
 
 ---
 
-layout: true
-
 ## Database architecture
 
----
+--
 
-.left-column-66[**Isolated:** Multiple databases, one per tenant]
-.right-column-33[![Diagram of isolated tenants](images/diagram-isolated.png)]
+**Isolated:**<br/>Multiple databases, one per tenant
 
----
+**Shared:**<br/>One database, tenant column on (almost) every table
 
-.left-column-66[**Shared:** One database, tenant column on (almost) every table]
-.right-column-33[![Diagram of shared database](images/diagram-shared.png)]
-
----
-
-.left-column-66[**Semi-isolated:** One database, one schema per tenant (PostgreSQL)]
-.right-column-33[![Diagram of semi-isolated tenants](images/diagram-semi-isolated.png)]
+**Semi-isolated:**<br/>One database, one schema per tenant (PostgreSQL)
 
 ---
 
 layout: true
 
 ## Isolated databases
+
+---
+
+.center[![Diagram of isolated tenants](images/diagram-isolated.png)]
 
 ---
 
@@ -364,16 +396,13 @@ class IsolatedTenantsRouter:
 
 ---
 
--   Do it if you expect a number of tenants in the lower tens.
--   Or if you can afford to buy a new Lamborghini for every tenant you get.
-
-.right[![Three Lamborghinis](images/lamborghini.png)]
-
----
-
 layout: true
 
 ## Shared database
+
+---
+
+.center[![Diagram of shared database](images/diagram-shared.png)]
 
 ---
 
@@ -433,13 +462,26 @@ instance = serializer.save(tenant=get_active_tenant())
 
 This quickly escalates to:
 
-.center[![Django motto with perfectionists replaced with burned out people](images/django-burned-out.png)]
+.center[![Django motto with "perfectionists" replaced with "burned out people"](images/django-burned-out.png)]
+
+---
+
+Tenant could be automatically **assigned** via:
+
+-   Default value for the field (a callable).
+-   Custom field with a `pre_save` hook.
+-   `pre_save` signal on relevant models.
+
+---
+
+Tenant could be automatically **queried** via:
+
+-   Custom manager.
+-   Custom queries.
 
 --
 
-The good news is that:
-
-.box[💡 It's possible to automatically inject the tenant in most use cases, but this requires .emph[additional wizardry]]
+.warning[⚠️ It's not trivial to make it work for all cases]
 
 ---
 
@@ -456,7 +498,7 @@ The good news is that:
 
 **.green[Recommendations]**
 
--   Put all your tenant anotated queries in a single place.
+-   Bookmark all your tenant anotated queries.
 -   Unit test each one of them, and make the test suite fail if any query is untested.
 
 --
@@ -468,6 +510,10 @@ The good news is that:
 layout: true
 
 ## Semi-isolated database
+
+---
+
+.right[![Diagram of semi-isolated tenants](images/diagram-semi-isolated.png)]
 
 ---
 
@@ -552,18 +598,32 @@ Explain that migrations must be run in all schemas, takes discipline to do zero 
 
 ---
 
-layout: false
+layout: true
 
-## Does it scale?
+## Which one is the best?
+
+---
+
+---
+
+.warning[🔥 Neither!]
 
 --
 
-.warning[🔥 Yes and no!]
-
---
-
-.left-column-66[Hit me in the Q&A because this deserves more than a slide. We can talk about sharding too...]
+.left-column-66[Hit me in the Q&A because this deserves more than a slide, although here's some food for thought...]
 .right-column-33[.right[![Young boy after food fight](images/food-fight.png)]]
+
+---
+
+|                       | Isolated | Shared | Semi-isolated |
+| --------------------- | -------- | ------ | ------------- |
+| Users inside tenants  | 🙂       | 🙂     | 🙂            |
+| Users outside tenants | 😱       | 🙂     | 🤔😅          |
+| Tenant isolation      | 😃       | 🤔😬   | 🤔😃          |
+| Tenant aggregations   | 😬       | 😃     | 😬            |
+| Database cost         | 🤑       | 🙂     | 🙂            |
+| Database migrations   | 😅       | 😃     | 😅😬          |
+| Overall scalability   | 😬       | 😃     | 🙂🤨😨        |
 
 ---
 
@@ -754,7 +814,7 @@ def some_celery_task(self, tenant_id, ...):
 class: middle
 layout: false
 
-# TL;DR
+# Finally, the fish
 
 ---
 
@@ -806,6 +866,25 @@ layout: false
 --
 
 .box[⭐ Come, we need .emph[you]!]
+
+.right[![Figurines used to represent users with sunglasses](images/figurines.png)]
+
+---
+
+# And that's it!
+
+**We can keep in touch here:**
+
+|         |                                                    |
+| ------- | -------------------------------------------------- |
+| Twitter | [@lorinkoz](https://twitter.com/lorinkoz)          |
+| GitHub  | [github.com/lorinkoz](https://github.com/lorinkoz) |
+| Email   | [lorinkoz@gmail.com](mailto:lorinkoz@gmail.com)    |
+
+**Special thanks to:**
+
+-   Russell Keith-Magee
+-   Raphael Michel
 
 ---
 

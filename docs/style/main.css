@@ -120,6 +120,7 @@ h3 {
     text-decoration: underline;
 }
 
+table th,
 table td {
     padding: 0em 0.5em;
 }

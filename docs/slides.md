@@ -7,6 +7,18 @@ class: middle
 
 Lorenzo Peña &middot; @lorinkoz
 
+???
+
+Here:
+
+-   Good afternoon.
+-   Who am I: name, city, profession, years of experience with Django.
+-   Thank the audience for joining, title of the talk.
+
+Transition:
+
+-   Introduction to the 2020 joke: in what's probably the most overused joke of the year...
+
 ---
 
 ## 2020 is going great so far
@@ -27,13 +39,23 @@ layout: true
 
 ![Django motto](images/django.png)
 
--   Mature, solid and battle tested
--   For perfectionists with deadlines (like you)
--   Vast ecosystem - over 4k projects.ref[1]
+--
+
+-   Mature, solid and battle tested.
+-   For perfectionists with deadlines (like you).
+-   Vast ecosystem - over 4k projects..ref[1]
 
 .bottom[
 .footnote[.ref[1] As listed in https://djangopackages.org]
 ]
+
+???
+
+Here: [JUST FOLLOW THE SLIDE]
+
+Transition:
+
+-   Three things have taken place in 2020 which IMO are also good signs of the health of Django as a framework.
 
 ---
 
@@ -43,6 +65,13 @@ layout: true
 .bottom[
 .footnote[.ref[1] https://macwright.org/2020/05/10/spa-fatigue.html]
 ]
+
+???
+
+-   This article from Tom MacWright (almost three months ago) which you should read if you havent.
+-   This resonated amongst the brightest minds of the Django community, and outside.
+-   We've just added too much oil to the salad.
+-   We could be very close to an inflection point in the history of the web in which we start enjoying boring frameworks again.
 
 ---
 
@@ -54,16 +83,31 @@ People are doing email services in vanilla monolith makers..ref[1]
 .footnote[.ref[1] https://twitter.com/dhh/status/1275901955995385856?s=20]
 ]
 
+???
+
+-   Email service that launched about a month ago: HEY
+-   Regardless of whether you like the service or whether you agree with the philosophical alignment of its public figures, this is an interesting event.
+-   Email service made in vanilla Ruby on Rails, no heavyweight frontend, with HTML over the wire.
+-   This is good news for Rails, but it also extrapolates as good news for Django.
+
 ---
 
 Template reactivity in Django is gaining some traction..ref[1].ref[2]
 
 .center[![Screenshot of edelvalle/reactor on GitHub](images/django-reactor-github.png)]
+.center[![Screenshot of jonathan-s/django-sockpuppet on GitHub](images/django-sockpuppet-github.png)]
 
 .bottom[
 .footnote[.ref[1] https://github.com/edelvalle/reactor]
-.footnote[.ref[2] https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html]
+.footnote[.ref[2] https://github.com/jonathan-s/django-sockpuppet]
 ]
+
+???
+
+-   Django reactivity has gained some traction lately.
+-   Check out these repositories (one of them from a fellow Cuban).
+-   Imagine your templates automatically refreshing on the client from a change in your models, all through websockets.
+-   Do you see the future coming from that direction?
 
 ---
 
@@ -100,9 +144,21 @@ The world is divided in two kinds of Djangonauts:
 
 .box[🔥 Multi-tenancy is inevitable]
 
+???
+
+-   The assumed prophetic wisdom here is that multi-tenancy is inevitable in a Djangonaut's career.
+-   Hot take, huh? What do you think?
+
 --
 
 .box[🦉 You don't come to it, it comes to you]
+
+???
+
+-   But it's also true that most likely, you won't wake up one day trying to code something for the sake of multi-tenancy itself.
+-   Oportunity usually presents itself as something that works good for a single tenant, and can be smartly expanded to a multi-tenant architecture, say, a million dollar idea for a SaaS.
+
+So, my dear audience, if you're not doing multi-tenancy in Django right now, I suspect that the oportunity can be just around the corner. So be prepared!
 
 ---
 
@@ -110,6 +166,10 @@ class: middle center
 layout: false
 
 ![Meme of "Is this a pigeon?" about multi-tenancy](images/pigeon-meme-multi-tenancy.png)
+
+???
+
+Now, before getting any deeper in the topic, and in case you're wondering what are we talking about, let's get on the same page on some definitions.
 
 ---
 
@@ -127,11 +187,19 @@ layout: true
 
 .right[![Diagram of multi-tenanacy](images/diagram-multi-tenancy.png)]
 
+???
+
+[JUST REPHRASE AS EXPLANATION]
+
 ---
 
 **Tenant:** Group of users who share a common access with specific privileges to the software instance..ref[1]
 
 .right[![Diagram of tenants](images/diagram-tenant.png)]
+
+???
+
+Think of it as a private environment, in a running shared software, where one or many users interact in isolation.
 
 ---
 
@@ -141,9 +209,9 @@ layout: true
 
 ---
 
-Users exist **within** the context of tenants:
+???
 
-.center[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
+Now, the relationship between users and tenants delineates some types of multi-tenancy we should be aware of.
 
 ---
 
@@ -153,9 +221,23 @@ Users exist **outside** the context of tenants:
 
 ---
 
+Users exist **within** the context of tenants:
+
+.center[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
+
+---
+
 Users exist **as** tenants:
 
 .center[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
+
+???
+
+Here: [CONTINUE THE EXPLANATION]
+
+Transition:
+
+How do we actually do this in Django?
 
 ---
 
@@ -166,8 +248,10 @@ class: middle center
 
 ???
 
--   Lots of things to do and do right
--   Some parts are non-trivial
+Why?
+
+-   Lots of things to do and do right.
+-   Some of those things are non-trivial.
 
 ---
 
@@ -180,13 +264,23 @@ layout: true
 -   There are multiple packages for handling multi-tenancy.
 -   Yes, I made one of them (a fork, actually)
 
+???
+
+So, do you need a package as foundation for your multi-tenant project? Most likely yes!
+
+[CONTINUE READING]
+
 --
 
 .box[🦉 But none of them solves it all]
 
+???
+
+Because the topic is too complex and has many many sides.
+
 --
 
--   Let's pretend we're going to do it from scratch instead.
+-   Let's pretend we're going to do multi-tenancy from scratch instead.
 -   You'll get a package, but not one you can install.
 
 ---
@@ -194,6 +288,18 @@ layout: true
 <p>Tired:</p>
 
 > Give someone a fish and you feed them for a day; teach someone to fish and you feed them for a lifetime.
+
+???
+
+Here:
+
+Most likely you've heard of the proverb.
+
+Transition:
+
+Now, the equivalent of this proverb applied to multi-tenancy would be... [READ IT]
+
+I consider a good thing that you are capable of breaking your SaaS. Only doing that you'll be able to rebuild it better for the benefit of us all.
 
 --
 
@@ -208,6 +314,15 @@ layout: false
 
 # The challenges ahead
 
+???
+
+Briefly mention the challenges ahead:
+
+-   Active tenant
+-   Database management
+-   Routing requests
+-   The scope of everything else
+
 ---
 
 layout: true
@@ -215,6 +330,10 @@ layout: true
 ## The active tenant
 
 ---
+
+???
+
+This takes a change of mindset.
 
 ---
 
@@ -269,9 +388,22 @@ def set_active_tenant(tenant):
     _active.value = tenant
 ```
 
+???
+
+Here's a basic implementation example.
+
 --
 
 .warning[⚠️ The use of globals is generally discouraged]
+
+???
+
+Warning:
+
+-   You shouldn't start creating globals for everything!
+-   There is a reason why this pattern is so scarce in the Django codebase itself.
+-   The more you depend on a global variable, the more coupled becomes your code, harder to test in isolation.
+-   This would be an acceptable use case of an otherwise frowned upon pattern.
 
 ---
 
@@ -282,16 +414,27 @@ tenant = get_active_tenant()
 *print(type(tenant))
 ```
 
+???
+
+[READ THE COMMENT IN THE CODE]
+
 --
 
-.box[🙋 Are tenants always represented by a **tenant model**?]
+.box[🙋 Are tenants always represented by a **model**?]
+
+???
+
+[READ QUESTION]
+
+Not necessarily, you might want to have tenants that are less dynamic in nature, such as a blog site, or the help center.
 
 --
 
 .box[💡 Tenants might require a higher abstraction]
 
 ???
-Here we'll have to explain that an instance of a model might not be sufficient.
+
+Be advised! [READ NUGGET]
 
 ---
 
@@ -312,6 +455,10 @@ layout: false
 
 # Database, models and managers
 
+???
+
+Once that we have the concept of active tenant settled, it's time to move to one of the most interesting parts of multi-tenancy...
+
 ---
 
 ## Database architecture
@@ -324,6 +471,10 @@ layout: false
 
 **Semi-isolated:**<br/>One database, one schema per tenant (PostgreSQL)
 
+???
+
+This is the common knowledge you get on most multi-tenancy documents out there.
+
 ---
 
 layout: true
@@ -333,6 +484,10 @@ layout: true
 ---
 
 .center[![Diagram of isolated tenants](images/diagram-isolated.png)]
+
+???
+
+One database for every tenant.
 
 ---
 
@@ -369,7 +524,7 @@ Order.objects.db_manager(active_db).do_something(...)
 
 ---
 
-Django has a thing called database routers
+Django has a thing called database routers:
 
 ```python
 class IsolatedTenantsRouter:
@@ -425,7 +580,7 @@ class SharedTenantModel(models.Model):
 
 ---
 
-Assign active tenant before creating a model instance:
+Assign the active tenant before creating a model instance:
 
 ```python
 order = Order(...)
@@ -435,7 +590,7 @@ order.save()
 
 ---
 
-Scope all queries with active tenant:
+Scope all queries with the active tenant:
 
 ```python
 # In regular queries
@@ -448,7 +603,7 @@ some_customer.orders.filter(order__tenant=get_active_tenant(), ...)
 
 ---
 
-Set active tenant when saving a form / serializer:
+Set the active tenant when saving a form / serializer:
 
 ```python
 # Form
@@ -519,16 +674,13 @@ layout: true
 
 ---
 
-Use PostgreSQL schemas.ref[1] to isolate tenants within a single database.
+Rely on PostgreSQL schemas.ref[1] to isolate tenants within a single database.
+
+**Schemas** are an intermediary layer between database and tables.
 
 .bottom[
 .footnote[.ref[1] https://www.postgresql.org/docs/9.1/ddl-schemas.html]
 ]
-
---
-
--   PostgreSQL schemas are an intermediary layer between database and tables.
--   Tables are scoped by schemas, and can be duplicated across schemas.
 
 --
 
@@ -551,6 +703,8 @@ Requires a custom database backend in order to set `search_path` based on active
 
 ```python
 from django.db.backends.postgresql import base as postgresql
+
+
 class DatabaseWrapper(postgresql.DatabaseWrapper):
     def _cursor(self, name=None):  # Over simplified !!!
         cursor = super()._cursor(name=name)
@@ -575,6 +729,10 @@ class SemiIsolatedTenantsRouter:
 *       return app_is_shared(app_label)
 ```
 
+???
+
+This also implies that migrations can no longer be run project-wise, but on each schema.
+
 ---
 
 **.green[Benefits]**
@@ -586,7 +744,7 @@ class SemiIsolatedTenantsRouter:
 
 -   No cross tenant relations.
 -   Extra care to define shared apps and tenant specific apps.
--   Extra care to define where to put users, sessions and content types.
+-   Extra care to define where to put users, sessions and ctypes.
 
 ---
 

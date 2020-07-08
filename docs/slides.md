@@ -68,8 +68,8 @@ Transition:
 
 ???
 
--   This article from Tom MacWright (almost three months ago) which you should read if you havent.
--   This resonated amongst the brightest minds of the Django community, and outside.
+-   This article from Tom MacWright (almost three months ago) which you should read if you haven't.
+-   This resonated among the brightest minds of the Django community, and outside.
 -   We've just added too much oil to the salad.
 -   We could be very close to an inflection point in the history of the web in which we start enjoying boring frameworks again.
 
@@ -92,7 +92,7 @@ People are doing email services in vanilla monolith makers..ref[1]
 
 ---
 
-Template reactivity in Django is gaining some traction..ref[1].ref[2]
+Reactivity (not React) in Django is gaining some traction..ref[1].ref[2]
 
 .center[![Screenshot of edelvalle/reactor on GitHub](images/django-reactor-github.png)]
 .center[![Screenshot of jonathan-s/django-sockpuppet on GitHub](images/django-sockpuppet-github.png)]
@@ -280,7 +280,7 @@ Because the topic is too complex and has many many sides.
 
 --
 
--   Let's pretend we're going to do multi-tenancy from scratch instead.
+-   Let's pretend we're going to do multi-tenancy from scratch.
 -   You'll get a package, but not one you can install.
 
 ---
@@ -297,15 +297,17 @@ Most likely you've heard of the proverb.
 
 Transition:
 
-Now, the equivalent of this proverb applied to multi-tenancy would be... [READ IT]
-
-I consider a good thing that you are capable of breaking your SaaS. Only doing that you'll be able to rebuild it better for the benefit of us all.
+Now, the equivalent of this proverb applied to multi-tenancy would be...
 
 --
 
 <p>Wired:</p>
 
 > Give them a package for a SaaS and they will make it; teach them the underlying principles and they will break it.
+
+???
+
+I consider a good thing that you are capable of breaking your SaaS. Only doing that you'll be able to rebuild it better for the benefit of us all.
 
 ---
 
@@ -563,7 +565,7 @@ layout: true
 
 ---
 
-All tenant-specific models require a FK to the model that controls the tenants:
+Entry-level, tenant-specific models require a FK to the model that controls the tenants:
 
 ```python
 class SharedTenantModel(models.Model):
@@ -583,22 +585,26 @@ class SharedTenantModel(models.Model):
 Assign the active tenant before creating a model instance:
 
 ```python
+# Via model save
 order = Order(...)
 order.tenant = get_active_tenant()
 order.save()
+
+# Via manager create
+Order.objects.create(tenant=get_active_tenant(), ...)
 ```
 
 ---
 
-Scope all queries with the active tenant:
+Scope the relevant queries with the active tenant:
 
 ```python
 # In regular queries
-Order.objects.create(tenant=get_active_tenant(), ...)
 Order.objects.filter(tenant=get_active_tenant(), ...)
 
 # In related queries
 some_customer.orders.filter(order__tenant=get_active_tenant(), ...)
+
 ```
 
 ---
@@ -615,15 +621,13 @@ instance.save()
 instance = serializer.save(tenant=get_active_tenant())
 ```
 
----
+--
 
-This quickly escalates to:
-
-.center[![Django motto with "perfectionists" replaced with "burned out people"](images/django-burned-out.png)]
+.box[🙋 Do all this allow for some automation?]
 
 ---
 
-Tenant could be automatically **assigned** via:
+Tenant field could be automatically **assigned** via:
 
 -   Default value for the field (a callable).
 -   Custom field with a `pre_save` hook.
@@ -631,14 +635,14 @@ Tenant could be automatically **assigned** via:
 
 ---
 
-Tenant could be automatically **queried** via:
+Tenant scope could be automatically **queried** via:
 
 -   Custom manager.
 -   Custom queries.
 
 --
 
-.warning[⚠️ It's not trivial to make it work for all cases]
+.warning[👀 Certain subqueries and aggregations might still require manual scoping]
 
 ---
 
@@ -656,7 +660,8 @@ Tenant could be automatically **queried** via:
 **.green[Recommendations]**
 
 -   Bookmark all your tenant anotated queries.
--   Unit test each one of them, and make the test suite fail if any query is untested.
+-   Unit test each one of them.
+-   Make the test suite fail if any query is untested.
 
 --
 
@@ -717,7 +722,7 @@ class DatabaseWrapper(postgresql.DatabaseWrapper):
 
 ---
 
-Requires a database router in order to control which models are migrated on which schemas.
+Requires a database router in order to control which models are migrated on which schemas:
 
 ```python
 class SemiIsolatedTenantsRouter:
@@ -754,7 +759,9 @@ layout: false
 ![Meme of crazy lady and cat about schemas and migrations](images/cat-lady-meme-schemas.png)
 
 ???
-Explain that migrations must be run in all schemas, takes discipline to do zero downtime upgrades.
+
+-   Migrations now must be run in all schemas.
+-   It takes discipline to do zero downtime upgrades.
 
 ---
 
@@ -771,7 +778,7 @@ layout: true
 --
 
 .left-column-66[Hit me in the Q&A because this deserves more than a slide, although here's some food for thought...]
-.right-column-33[.right[![Young boy after food fight](images/food-fight.png)]]
+.right-column-33[.right[![Young boy after a food fight](images/food-fight.png)]]
 
 ---
 
@@ -802,7 +809,7 @@ layout: true
 
 .left-column[
 
-**Captured in the request**
+##### Captured in the request
 
 -   Inferred from the user
 -   Stored in the session
@@ -811,7 +818,7 @@ layout: true
 
 .right-column[
 
-**Captured in the URL**
+##### Captured in the URL
 
 -   Via subdomain
 -   Via subfolder
@@ -828,7 +835,7 @@ layout: true
 def TenantFromSessionMiddleware(get_response):
     def middleware(request):
 *       tenant = get_tenant_from_session(request.session)
-        if tenant:
+        if tenant and not get_active_tenant():
             set_active_tenant(tenant)
         return get_response(request)
     return middleware
@@ -899,7 +906,7 @@ The only possible way is when the tenant is inferred from the URL itself:
 
 --
 
-.warning[👀 But it's not trivial either]
+.warning[👀 But some combinations are tricky]
 
 ---
 
@@ -907,7 +914,7 @@ The only possible way is when the tenant is inferred from the URL itself:
 Django only reverses the path, so the full domain of the tenant must be prepended.
 
 **Via subfolder**<br/>
-Required parameter of all URLs. In order to make it URLConf agnostic, a clever hack is required.
+All URLs must be interpolated with tenant. In order to make it URLConf transparent, a clever hack is required.
 
 **Via query parameter**<br/>
 All URLs must be appended with the query parameter.
@@ -1019,14 +1026,14 @@ https://djangopackages.org/grids/g/multi-tenancy/
 
 ---
 
-**Shared database**
+##### Shared database
 
 -   [citusdata/django-multitenant](https://github.com/citusdata/django-multitenant)
 -   [raphaelm/django-scopes](https://github.com/raphaelm/django-scopes)
 
 --
 
-**Semi-isolated database**
+##### Semi-isolated database
 
 -   [bernardopires/django-tenant-schemas](https://github.com/bernardopires/django-tenant-schemas)
 -   [tomturner/django-tenants](https://github.com/tomturner/django-tenants)
@@ -1064,8 +1071,7 @@ layout: false
 
 ##### Special thanks to:
 
--   Russell Keith-Magee
--   Raphael Michel
+Russell Keith-Magee, Raphael Michel
 
 ---
 

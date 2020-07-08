@@ -80,7 +80,7 @@ People are doing email services in vanilla monolith makers..ref[1]
 .center[![Tweet from DDH about the Hey stack](images/dhh-tweet-hey-stack.png)]
 
 .bottom[
-.footnote[.ref[1] https://twitter.com/dhh/status/1275901955995385856?s=20]
+.footnote[.ref[1] https://twitter.com/dhh/status/1275901955995385856]
 ]
 
 ???
@@ -657,15 +657,22 @@ Tenant scope could be automatically **queried** via:
 
 ---
 
-**.green[Recommendations]**
+.left-column[![Meme of brain not letting you sleep on scoped queries](images/brain-sleep-meme-scopes.png)]
+
+--
+
+.right-column[
 
 -   Bookmark all your tenant anotated queries.
 -   Unit test each one of them.
 -   Make the test suite fail if any query is untested.
+    ]
 
 --
 
+.right-column[
 .box[🧸 Tests are a soft pillow]
+]
 
 ---
 
@@ -753,10 +760,7 @@ This also implies that migrations can no longer be run project-wise, but on each
 
 ---
 
-class: middle center
-layout: false
-
-![Meme of crazy lady and cat about schemas and migrations](images/cat-lady-meme-schemas.png)
+.center[![Meme of crazy lady and cat about schemas and migrations](images/cat-lady-meme-schemas.png)]
 
 ???
 

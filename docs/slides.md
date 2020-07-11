@@ -261,8 +261,15 @@ layout: true
 
 ---
 
+.left-column[
+
 -   There are multiple packages for handling multi-tenancy.
--   Yes, I made one of them (a fork, actually)
+-   Yes, I made one of them<br/>(a fork, actually)
+    ]
+
+.right-column[
+.right[![Lego castle](images/lego-castle.png)]
+]
 
 ???
 
@@ -278,10 +285,14 @@ So, do you need a package as foundation for your multi-tenant project? Most like
 
 Because the topic is too complex and has many many sides.
 
---
+---
 
--   Let's pretend we're going to do multi-tenancy from scratch.
--   You'll get a package, but not one you can install.
+.center[![Lego bricks](images/legos.png)]
+
+???
+
+-   Let's pretend we're going to implement multi-tenancy from scratch.
+-   You'll get a package, but not the one you can install.
 
 ---
 
@@ -339,7 +350,7 @@ This takes a change of mindset.
 
 ---
 
-.box[Most operations will now require a tenant to be considered 😎 **the active tenant**]
+.box[We need to know which tenant is **the active tenant** 😎]
 
 --
 
@@ -361,18 +372,24 @@ This takes a change of mindset.
 
 --
 
-.red[And everything else...]
+.warning[👀 Even outside the request / response cycle]
 
 ---
 
-There are things that are currently tracked by Django as an **active something** independent of the request / response cycle. For instance: **timezone** and **language**.
+Django has a couple of globals we're probably familiar with:
 
-The same idea is applicable to track the **active tenant**, so that you can have:
+|             |                          |                      |
+| ----------- | ------------------------ | -------------------- |
+| 🌐 Timezone | `get_current_timezone()` | `activate(timezone)` |
+| 🈸 Language | `get_current_language()` | `activate(language)` |
 
-```python
-tenant = get_active_tenant()
-set_active_tenant(tenant)
-```
+--
+
+We could also have:
+
+|           |                        |                    |
+| --------- | ---------------------- | ------------------ |
+| 🏠 Tenant | `get_current_tenant()` | `activate(tenant)` |
 
 ---
 
@@ -383,11 +400,11 @@ from asgiref.local import Local
 
 _active = Local()
 
-def get_active_tenant():
-    return getattr(_active, "value", None)
+def get_current_tenant():
+    return getattr(_active, "tenant", None)
 
-def set_active_tenant(tenant):
-    _active.value = tenant
+def activate(tenant):
+    _active.tenant = tenant
 ```
 
 ???
@@ -410,7 +427,7 @@ Warning:
 ---
 
 ```python
-tenant = get_active_tenant()
+tenant = get_current_tenant()
 
 # What do you expect to be the result of the next line?
 *print(type(tenant))
@@ -444,11 +461,9 @@ Be advised! [READ NUGGET]
 
 --
 
-You will have to answer some questions in a case by case basis:
-
--   Is it a bug?
--   Does it make sense without a tenant?
--   Does it imply all tenants are targeted?
+1. Is it a bug?
+2. Does the operation make sense without a tenant?
+3. Does the lack of a tenant imply that all tenants are targeted?
 
 ---
 
@@ -510,7 +525,7 @@ DATABASES = {
 Queries need to define the active tenant:
 
 ```python
-tenant = get_active_tenant()
+tenant = get_current_tenant()
 active_db = get_database_for_tenant(tenant)
 
 order = Order(...)
@@ -532,11 +547,11 @@ Django has a thing called database routers:
 class IsolatedTenantsRouter:
 
     def db_for_read(self, model, **hints):
-        tenant = get_active_tenant()
+        tenant = get_current_tenant()
         return get_database_for_tenant(tenant)
 
     def db_for_write(self, model, **hints):
-        tenant = get_active_tenant()
+        tenant = get_current_tenant()
         return get_database_for_tenant(tenant)
 ```
 
@@ -550,8 +565,15 @@ class IsolatedTenantsRouter:
 
 -   No cross-tenant relations.
 -   No relation between tenants and shared data.
--   Increased costs of deployment.
 -   Adding tenants require reconfiguring the project.
+
+---
+
+.center[![Scrooge McDuck in a pile of money](images/mcduck-gold.png)]
+
+???
+
+Increased costs of operations
 
 ---
 
@@ -587,11 +609,11 @@ Assign the active tenant before creating a model instance:
 ```python
 # Via model save
 order = Order(...)
-order.tenant = get_active_tenant()
+order.tenant = get_current_tenant()
 order.save()
 
 # Via manager create
-Order.objects.create(tenant=get_active_tenant(), ...)
+Order.objects.create(tenant=get_current_tenant(), ...)
 ```
 
 ---
@@ -600,11 +622,13 @@ Scope the relevant queries with the active tenant:
 
 ```python
 # In regular queries
-Order.objects.filter(tenant=get_active_tenant(), ...)
+Order.objects.filter(tenant=get_current_tenant(), ...)
 
 # In related queries
-some_customer.orders.filter(order__tenant=get_active_tenant(), ...)
-
+some_customer.orders.filter(
+    order__tenant=get_current_tenant(),
+    ...
+)
 ```
 
 ---
@@ -614,11 +638,11 @@ Set the active tenant when saving a form / serializer:
 ```python
 # Form
 instance = OrderForm.save(commit=False)
-instance.tenant = get_active_tenant()
+instance.tenant = get_current_tenant()
 instance.save()
 
 # DRF Serializer
-instance = serializer.save(tenant=get_active_tenant())
+instance = serializer.save(tenant=get_current_tenant())
 ```
 
 --
@@ -686,9 +710,9 @@ layout: true
 
 ---
 
-Rely on PostgreSQL schemas.ref[1] to isolate tenants within a single database.
-
-**Schemas** are an intermediary layer between database and tables.
+.left-column-66[Relies on PostgreSQL schemas.ref[1] to isolate tenants within a single database.
+{{content}}]
+.right-column-33[.right[![Diagram of semi-isolated tenants](images/diagram-semi-isolated.png)]]
 
 .bottom[
 .footnote[.ref[1] https://www.postgresql.org/docs/9.1/ddl-schemas.html]
@@ -696,18 +720,24 @@ Rely on PostgreSQL schemas.ref[1] to isolate tenants within a single database.
 
 --
 
-.warning[⚠️ HYPE WARNING]
+##### Schemas:
+
+-   Layer between database and tables.
+-   Equivalent to namespaces.
 
 ---
 
-The concept of **search path** allows for interesting combinations of isolated and shared data.
+Search path defines the precedence of schemas:
+
+.left-column-33[![Diagram of schemas](images/schemas.png)]
+.right-column-66[{{content}}]
 
 --
 
-.left-column[
-With `search_path=tenant1,shared` tables are searched in the schema of tenant 1 first, then in the shared schema
-]
-.right-column[![Diagram of schemas](images/schemas.png)]
+```psql
+        SET search_path = tenant1, shared;
+        SET search_path = tenant2, shared;
+```
 
 ---
 
@@ -720,7 +750,7 @@ from django.db.backends.postgresql import base as postgresql
 class DatabaseWrapper(postgresql.DatabaseWrapper):
     def _cursor(self, name=None):  # Over simplified !!!
         cursor = super()._cursor(name=name)
-        tenant = get_active_tenant()
+        tenant = get_current_tenant()
 *       schemas = get_schemas_from_tenant(tenant)
         search_path = ",".join(schemas)
 *       cursor.execute(f"SET search_path = {search_path}")
@@ -735,7 +765,7 @@ Requires a database router in order to control which models are migrated on whic
 class SemiIsolatedTenantsRouter:
     def allow_migrate(self, db, app_label, model_name=None,
                       **hints):
-        tenant = get_active_tenant()
+        tenant = get_current_tenant()
         if tenant is not None:
 *           return app_is_tenant_specific(app_label)
 *       return app_is_shared(app_label)
@@ -839,8 +869,8 @@ layout: true
 def TenantFromSessionMiddleware(get_response):
     def middleware(request):
 *       tenant = get_tenant_from_session(request.session)
-        if tenant and not get_active_tenant():
-            set_active_tenant(tenant)
+        if tenant and not get_current_tenant():
+            activate(tenant)
         return get_response(request)
     return middleware
 ```
@@ -857,6 +887,8 @@ def TenantFromSessionMiddleware(get_response):
 
 .left-column[
 
+.center[![Diagram of users selected prior to tenants](images/user-then-tenant.png)]
+
 ```python
 SessionMiddleware
 *TenantFromSessionMiddleware
@@ -866,7 +898,11 @@ AuthenticationMiddleware
 
 ]
 
+--
+
 .right-column[
+
+.center[![Diagram of tenants selected prior to users](images/tenant-then-user.png)]
 
 ```python
 *StandaloneTenantMiddleware
@@ -925,6 +961,27 @@ All URLs must be appended with the query parameter.
 
 ---
 
+layout: false
+
+## Tenant-specific URLConfs
+
+--
+
+.box[💡 You can use different URLConfs based on the active tenant]
+
+--
+
+```python
+def URLConfFromTenantMiddleware(get_response):
+    def middleware(request):
+        tenant = get_current_tenant()
+*       request.urlconf = get_urlconf_from_tenant(tenant)
+        return get_response(request)
+    return middleware
+```
+
+---
+
 class: middle
 layout: false
 
@@ -934,8 +991,8 @@ layout: false
 
 ## Admin site
 
--   For the URL it comes as part of your tenant routing scheme.
--   For adjusting the models that are available to edit, you might need to create a custom admin site.
+-   You may need custom admin sites for different tenants.
+-   You can use custom model admins to provide tenant agnostic forms.
 
 ---
 
@@ -954,7 +1011,7 @@ CACHES = {
 
 # myproject/cache.py
 def get_key_from_tenant(key, key_prefix, version):
-    tenant = get_active_tenant()
+    tenant = get_current_tenant()
     return "{}:{}:{}:{}".format(tenant, key_prefix, version, key)
 ```
 
@@ -968,7 +1025,7 @@ You can pass the tenant to activate as one of your task parameters:
 @app.task(bind=True)
 def some_celery_task(self, tenant_id, ...):
     tenant = get_tenant_from_id(tenant_id)
-    set_active_tenant(tenant)
+    activate(tenant)
     ...
 ```
 
@@ -987,8 +1044,8 @@ def some_celery_task(self, tenant_id, ...):
 
 ## Management commands
 
--   For new management commands, you can include a tenant argument, so you can activate the tenant before executing the command.
--   For existing, non tenant-aware commands, you can define a special command wrapper.
+-   For new commands, you can include a tenant argument.
+-   For existing, non tenant-aware commands, you can define a .emph[special command wrapper].
 
 --
 

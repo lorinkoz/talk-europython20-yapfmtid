@@ -66,6 +66,11 @@ h3 {
     border-left: 0.5em solid darkslategray;
     display: block;
     background: rgba(100, 100, 100, 0.1);
+    clear: both;
+}
+
+.clear {
+    clear: both;
 }
 
 .warning {

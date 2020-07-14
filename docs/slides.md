@@ -527,7 +527,7 @@ layout: true
 
 ---
 
-Entry-level, tenant-specific models require a FK to the model that controls the tenants:
+.emph[Entry-level, tenant-specific models] require a FK to the model that controls the tenants:
 
 ```python
 class SharedTenantAbstractModel(models.Model):
@@ -577,16 +577,12 @@ Tenant field could be automatically **assigned** via:
 -   `ForeignKey` field subclass with a `pre_save` hook.
 -   `pre_save` signal on relevant models.
 
----
+--
 
 Tenant scope could be automatically **queried** via:
 
 -   Custom manager.
 -   Custom queries.
-
---
-
-.warning[👀 Certain subqueries and aggregations might still require manual scoping]
 
 ---
 
@@ -661,7 +657,7 @@ Search path defines the precedence of schemas:
 
 ---
 
-Your queries are always PODQ (plain old Django queries):
+Your queries remain unchanged:
 
 ```python
 Customer.objects.all()
@@ -700,13 +696,16 @@ Requires a database router in order to control which models are migrated on whic
 
 ```python
 class SemiIsolatedTenantsRouter:
-    def allow_migrate(self, db, app_label, model_name=None,
-                      **hints):
+    def allow_migrate(self, db, app_label, model_name, ...):
         tenant = get_current_tenant()
         if tenant is not None:
             return `app_is_tenant_specific(app_label)`
         return `app_is_shared(app_label)`
 ```
+
+--
+
+.warning[👀 The tweak is on migrations!]
 
 ???
 
@@ -721,7 +720,7 @@ This also implies that migrations can no longer be run project-wise, but on each
 
 **.red[Limitations]**
 
--   No cross tenant relations.
+-   More magic than recommended by daily dose?
 -   Extra care to define shared apps and tenant specific apps.
 -   Extra care to define where to put users, sessions and ctypes.
 
@@ -879,15 +878,11 @@ For some cases it's simply not possible:
 
 The only possible way is when the tenant is inferred from the URL itself:
 
-|     |                     |                               |
-| --- | ------------------- | ----------------------------- |
-| ✔️  | Via subdomain       | `tenant1.example.com/view/`   |
-| ✔️  | Via subfolder       | `example.com/tenant1/view/`   |
-| ✔️  | Via query parameter | `example.com/view/?t=tenant1` |
-
---
-
-.warning[👀 But some combinations are tricky]
+|     |                     |                                        |
+| --- | ------------------- | -------------------------------------- |
+| ✔️  | Via subdomain       | .emph[`tenant1`]`.example.com/view/`   |
+| ✔️  | Via subfolder       | `example.com/`.emph[`tenant1`]`/view/` |
+| ✔️  | Via query parameter | `example.com/view/?t=`.emph[`tenant1`] |
 
 ---
 
@@ -895,7 +890,7 @@ The only possible way is when the tenant is inferred from the URL itself:
 Django only reverses the path, so the full domain of the tenant must be prepended.
 
 **Via subfolder**<br/>
-All URLs must be interpolated with tenant. In order to make it URLConf transparent, a clever hack is required.
+All URLs must be interpolated with the tenant. To make the subfolder transparent to the URLConf, a clever hack is required.
 
 **Via query parameter**<br/>
 All URLs must be appended with the query parameter.
@@ -905,6 +900,10 @@ All URLs must be appended with the query parameter.
 layout: false
 
 ## Tenant-specific URLConfs
+
+???
+
+Bonus!
 
 --
 
@@ -930,10 +929,17 @@ layout: false
 
 ---
 
-## Admin site
+## Management commands
 
--   You may need custom admin sites for different tenants.
--   You can use custom model admins to provide tenant agnostic forms.
+-   For new commands, you can include a tenant argument.
+-   For existing, non tenant-aware commands, you can define a .emph[special command wrapper].
+
+---
+
+## File storage
+
+-   You can define a custom tenant storage that organizes files per tenant.
+-   If cross-tenant file access is a security problem for you, you will need a custom view to act as proxy for files and decide if the incoming request has access to the requested file.
 
 ---
 
@@ -977,61 +983,18 @@ def some_celery_task(self, tenant_id, ...):
 -   Requires custom middleware to activate tenant from request.
 -   Requires naming your consumer groups including the tenant (for proper cross-tenant group isolation)
 
---
-
-.warning[👀 This requires some boilerplate code]
-
----
-
-## Management commands
-
--   For new commands, you can include a tenant argument.
--   For existing, non tenant-aware commands, you can define a .emph[special command wrapper].
-
---
-
-.warning[⚠️ This gets trickier the more elegant]
-
----
-
-## File storage
-
--   You can define a custom tenant storage that organizes files per tenant.
--   If cross-tenant file access is a security problem for you, you will need a custom view to act as proxy for files and decide if the incoming request has access to the requested file.
-
 ---
 
 class: middle
 layout: false
 
-## 😅 Too much to cover!
-
----
-
-class: middle
-layout: false
-
-# Finally, the fish
+## 😅 Too much to cover, huh?
 
 ---
 
 layout: true
 
-## Available packages
-
----
-
-Multi-tenancy grid of **djangopackages.org**
-
-https://djangopackages.org/grids/g/multi-tenancy/
-
---
-
-.warning[⚠️ Check activity and compatibility of packages]
-
---
-
-.box[🙏 Add yours if it's not there]
+## The fish
 
 ---
 

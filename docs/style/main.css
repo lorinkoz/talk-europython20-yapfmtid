@@ -139,6 +139,10 @@ a:focus {
     font-family: Consolas;
 }
 
+li > p {
+    margin: 0;
+}
+
 blockquote {
     font-family: Georgia, "Times New Roman", Times, serif;
     font-style: italic;

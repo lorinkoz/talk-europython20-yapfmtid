@@ -39,7 +39,7 @@ layout: true
 
 ---
 
--   15 years!
+-   Just turned 15 years old!
 
 --
 
@@ -55,10 +55,6 @@ layout: true
 
 ---
 
--   Still a proud maker of magnificent monoliths.
-
---
-
 -   Awesome community.
 
 --
@@ -67,7 +63,7 @@ layout: true
 
 ---
 
--   Increasing async support.
+-   More async support in every release.
 
 --
 
@@ -77,6 +73,14 @@ layout: true
 .footnote[.ref[1] https://github.com/edelvalle/reactor]
 .footnote[.ref[2] https://github.com/jonathan-s/django-sockpuppet]
 ]
+
+---
+
+-   New cycle of monoliths becoming popular.
+
+--
+
+-   New cycle of batteries-included frameworks becoming popular.
 
 ---
 
@@ -114,8 +118,8 @@ What does it have to do with .emph[you]?
 
 The world is divided in two kinds of Djangonauts:
 
--   Those who **are doing** multi-tenancy.
--   Those who **will be doing** multi-tenancy anytime soon.
+1. Those who **are doing** multi-tenancy.
+2. Those who **will be doing** multi-tenancy anytime soon.
 
 --
 
@@ -1019,9 +1023,9 @@ layout: false
 
 --
 
--   Testing things.
--   Creating issues.
--   Opening pull requests.
+-   Reporting bugs.
+-   Proposing / implementing new features.
+-   Improving documentation.
 
 --
 

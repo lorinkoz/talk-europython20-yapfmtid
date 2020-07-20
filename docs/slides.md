@@ -49,11 +49,12 @@ class: center
 
 --
 
--   Stronger than ever with more async and reactivity..ref[1].ref[2]
+-   Stronger than ever with more async.ref[1] and reactivity..ref[2].ref[3]
 
 .bottom[
-.footnote[.ref[1] https://github.com/edelvalle/reactor]
-.footnote[.ref[2] https://github.com/jonathan-s/django-sockpuppet]
+.footnote[.ref[1] https://docs.djangoproject.com/en/dev/releases/3.1/]
+.footnote[.ref[2] https://github.com/edelvalle/reactor]
+.footnote[.ref[3] https://github.com/jonathan-s/django-sockpuppet]
 ]
 
 ---
@@ -105,9 +106,6 @@ layout: true
 --
 
 .left-column-66[.box[🤔 What to do?]]
-
---
-
 .right-column-33[.right[![Screenshot of Townscaper with a tiny red house](images/problem-solved.png)]]
 
 .bottom[
@@ -186,7 +184,7 @@ layout: true
 ]
 
 .left-column-33[
-.center[![Shopify logo](images/shopify-logo.png) Shops]
+.center[![Shopify logo](images/shopify-logo.png) Stores]
 ]
 
 .left-column-33[
@@ -781,13 +779,17 @@ layout: false
 
 layout: true
 
-## Activating a tenant from the incoming request
+## Tenant routing
 
 ---
 
+.box[🤔 How to activate a tenant from a request?]
+
+--
+
 .left-column[
 
-##### Captured in the request
+##### In general
 
 -   Inferred from the user
 -   Stored in the session
@@ -796,18 +798,18 @@ layout: true
 
 .right-column[
 
-##### Captured in the URL
+##### Specifically from the URL
 
--   Via subdomain
--   Via subfolder
--   Via query parameter
+-   From the domain
+-   From a subfolder
+-   From a query parameter
     ]
 
---
-
-.box[A tenant can be activated from an incoming request<br/>via 🚦 middleware]
-
 ---
+
+.box[🚦 Middleware are the perfect place to do it!]
+
+--
 
 ```python
 def TenantFromSessionMiddleware(get_response):
@@ -819,9 +821,19 @@ def TenantFromSessionMiddleware(get_response):
     return middleware
 ```
 
+---
+
+Multiple retrieval methods could be implemented:
+
+-   `get_tenant_from_user(request.user)`
+-   `get_tenant_from_headers(request.headers)`
+-   `get_tenant_from_domain(request.get_host())`
+-   `get_tenant_from_subfolder(request.path)`
+-   `get_tenant_from_params(request.GET)`
+
 --
 
-.box[💡 Middleware with different retrieval methods<br/>can be chained]
+.box[💡 Middleware with different methods could be chained]
 
 ---
 
@@ -849,20 +861,13 @@ The only possible way is when the tenant is inferred from the URL itself:
 
 |     |                     |                                        |
 | --- | ------------------- | -------------------------------------- |
-| ✔️  | Via subdomain       | .emph[`tenant1`]`.example.com/view/`   |
+| ✔️  | Via domain          | .emph[`tenant1`]`.example.com/view/`   |
 | ✔️  | Via subfolder       | `example.com/`.emph[`tenant1`]`/view/` |
 | ✔️  | Via query parameter | `example.com/view/?t=`.emph[`tenant1`] |
 
----
+--
 
-**Via subdomain**<br/>
-Django only reverses the path, so the full domain of the tenant must be prepended.
-
-**Via subfolder**<br/>
-All URLs must be interpolated with the tenant. To make the subfolder transparent to the URLConf, a clever hack is required.
-
-**Via query parameter**<br/>
-All URLs must be appended with the query parameter.
+.box[💡 Requires tweaking the URL reversing process]
 
 ---
 
@@ -891,6 +896,14 @@ class: middle
 layout: false
 
 # The scope of everything else
+
+--
+
+1. Management commands
+2. File storage
+3. Cache
+4. Celery tasks
+5. Channels (websockets)
 
 ---
 
@@ -953,7 +966,7 @@ def some_celery_task(self, tenant_id, ...):
 class: middle
 layout: false
 
-# Now, the packages
+# Finally, the packages
 
 ---
 

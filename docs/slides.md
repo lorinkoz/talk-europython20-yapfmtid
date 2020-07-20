@@ -9,12 +9,51 @@ Lorenzo Peña &middot; @lorinkoz
 
 ---
 
-## 2020 is going great so far
+layout: false
+class: middle
 
-.center[![Dinosaur in traffic with meteors falling](images/dinosaur-traffic.jpg)]
+|     |                      |
+| --- | -------------------- |
+|     | .high[yet another]   |
+|     | .high[package]       |
+|     | .high[multi-tenancy] |
+| 👉  | .high[Django]        |
+
+---
+
+class: center
+
+## 2020 has gotten a little bit out of control
+
+![Dinosaur in traffic with meteors falling](images/dinosaur-traffic.jpg)
+
+---
+
+class: center
+
+## We don't even know what to make of this
+
+![Dinosaur in traffic with meteors falling, parody with GPT-3](images/dinosaur-traffic-gpt3.jpg)
+
+---
+
+![Django motto](images/django.png)
+
+--
+
+-   Just turned 15!
+
+--
+
+-   Amazing community, great momentum!
+
+--
+
+-   Stronger than ever with more async and reactivity..ref[1].ref[2]
 
 .bottom[
-.footnote[This is arguably one of the most overused jokes of the year]
+.footnote[.ref[1] https://github.com/edelvalle/reactor]
+.footnote[.ref[2] https://github.com/jonathan-s/django-sockpuppet]
 ]
 
 ---
@@ -24,7 +63,19 @@ layout: false
 
 ![Meme of Django lifting the heavy weight of 2020 decade](images/django-2020-meme.png)
 
-### Django is in great shape for the starting decade
+### Don't worry, Django can handle the decade
+
+---
+
+layout: false
+class: middle
+
+|     |                      |
+| --- | -------------------- |
+|     | .high[yet another]   |
+|     | .high[package]       |
+| 👉  | .high[multi-tenancy] |
+|     | .high[Django]        |
 
 ---
 
@@ -49,15 +100,19 @@ layout: true
 
 --
 
--   Everything works great!
-
---
-
 -   Now customers .blue[**blue**], .green[**green**] and .yellow[**yellow**] have the same problem.
 
 --
 
-.box[🤔 What to do?]
+.left-column-66[.box[🤔 What to do?]]
+
+--
+
+.right-column-33[.right[![Screenshot of Townscaper with a tiny red house](images/problem-solved.png)]]
+
+.bottom[
+.footnote[Screenshot of https://store.steampowered.com/app/1291340/Townscaper/]
+]
 
 ---
 
@@ -104,7 +159,7 @@ layout: true
 
 .left-column-66[
 
--   Isolated space.
+-   Isolated spaces.
 -   Users with specific privileges interact.
 
 ]
@@ -135,84 +190,51 @@ layout: true
 ]
 
 .left-column-33[
-.center[![Stackexchange logo](images/stackexchange-logo.png) Sites]
-]
-
----
-
-layout: true
-
-## Users and tenants
-
----
-
-Users exist **outside** the context of tenants:
-
-.left-column-66[
-.left[![Diagram of users outside tenants](images/diagram-users-out-tenants.png)]
-]
-
---
-
-.right-column-33[
-.center[![WordPress logo](images/wordpress-logo.png)]
-.center[![Shopify logo](images/shopify-logo.png)]
-.center[![Discord logo](images/discord-logo.png)]
-]
-
----
-
-Users exist **within** the context of tenants:
-
-.left-column-66[
-.left[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
-]
-
---
-
-.right-column-33[
-.center[![Slack logo](images/slack-logo.png)]
-]
-
----
-
-Users exist **as** tenants:
-
-.left-column-66[
-.left[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
-]
-
---
-
-.right-column-33[
-.center[![Gmail logo](images/gmail-logo.png)]
-.center[![Dropbox logo](images/dropbox-logo.png)]
+.center[![StackExchange logo](images/stackexchange-logo.png) Sites]
 ]
 
 ---
 
 layout: false
-class: middle center
 
-![Meme of Boromir "One does not simply walk into Mordor" about multi-tenancy](images/boromir-mordor-meme-multi-tenancy.png)
+.box[`echo "Awesome!"`<br/>`python3 manage.py add-multi-tenancy --asap`]
+
+--
+
+.right[![Meme of Boromir "One does not simply walk into Mordor" about multi-tenancy](images/boromir-mordor-meme-multi-tenancy.png)]
+
+---
+
+layout: false
+class: middle
+
+|     |                      |
+| --- | -------------------- |
+|     | .high[yet another]   |
+| 👉  | .high[package]       |
+|     | .high[multi-tenancy] |
+|     | .high[Django]        |
 
 ---
 
 layout: true
 
-## A package for multi-tenancy
+## Will you need a package for multi-tenancy?
 
 ---
 
 .left-column[
+.left[![Lego castle](images/lego-castle.png)]
+]
 
--   There are multiple packages for handling multi-tenancy.
--   Yes, I made one of them<br/>(a fork, actually)
-    ]
+--
 
 .right-column[
-.right[![Lego castle](images/lego-castle.png)]
-]
+
+-   Most likely, yes.
+-   There are many of them.
+-   I made one (a fork, actually.)
+    ]
 
 --
 
@@ -220,14 +242,75 @@ layout: true
 
 ---
 
-.center[![Lego bricks](images/legos.png)]
+layout: true
+
+## Yet another package?
 
 ---
 
-class: middle
-layout: false
+---
 
-# The challenges ahead
+.box[🤚 Not exactly!]
+
+--
+
+.left-column-66[![Lego bricks](images/legos.png)]
+.right-column-33[{{content}}]
+
+--
+
+-   Select
+-   Understand
+-   Debug
+-   Tweak
+-   Contribute back
+
+--
+
+...on any package
+
+---
+
+<br/>
+<br/>
+
+### .blue[Not just yet another package.]
+
+--
+
+## .green[The package to rule every other package!]
+
+--
+
+# .red[The ultimate package!]
+
+---
+
+layout: false
+class: middle
+
+|     |                      |
+| --- | -------------------- |
+| 👉  | .high[yet another]   |
+|     | .high[package]       |
+|     | .high[multi-tenancy] |
+|     | .high[Django]        |
+
+---
+
+layout: false
+class: middle center
+
+![Woman with dirty hands](images/woman-dirty-hands.jpg)
+
+### Time to get our hands happily dirty
+
+---
+
+layout: false
+class: middle
+
+# The active tenant
 
 ---
 
@@ -237,7 +320,35 @@ layout: true
 
 ---
 
-.box[We need to know which tenant is **the active tenant** 😎]
+.left-column[.center[![StackExchange logo](images/stackexchange-logo.png)]]
+
+--
+
+.right-column[
+
+```python
+Question.objects.all()
+```
+
+]
+
+--
+
+<br/>
+
+.center[**Ok, but where?**]
+
+<br/>
+
+--
+
+.left-column-33[.center[![StackOverflow logo](images/stackexchange-stackoverflow-logo.png)]]
+.left-column-33[.center[![ServerFault logo](images/stackexchange-serverfault-logo.png)]]
+.left-column-33[.center[![SuperUser logo](images/stackexchange-superuser-logo.png)]]
+
+---
+
+.box[New concept: **the active tenant** 😎]
 
 --
 
@@ -314,13 +425,77 @@ def activate(tenant):
 class: middle
 layout: false
 
-# Database, models and managers
+# Three architectural choices
+
+--
+
+1. Users and tenants
+2. Database architecture
+3. Tenant routing
+
+---
+
+layout: true
+
+## Users and tenants
+
+---
+
+---
+
+Users exist **outside** the context of tenants:
+
+.left-column-66[
+.left[![Diagram of users outside tenants](images/diagram-users-out-tenants.png)]
+]
+
+--
+
+.right-column-33[
+.center[![WordPress logo](images/wordpress-logo.png)]
+.center[![Shopify logo](images/shopify-logo.png)]
+.center[![Discord logo](images/discord-logo.png)]
+]
+
+---
+
+Users exist **within** the context of tenants:
+
+.left-column-66[
+.left[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
+]
+
+--
+
+.right-column-33[
+.center[![Slack logo](images/slack-logo.png)]
+]
+
+---
+
+Users exist **as** tenants:
+
+.left-column-66[
+.left[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
+]
+
+--
+
+.right-column-33[
+.center[![Gmail logo](images/gmail-logo.png)]
+.center[![Dropbox logo](images/dropbox-logo.png)]
+]
+
+---
+
+class: middle
+layout: false
+
+# Database architecture
 
 ---
 
 ## Database architecture
-
---
 
 **Isolated:**<br/>Multiple databases, one per tenant
 
@@ -360,11 +535,11 @@ Queries need to rely on the active tenant:
 tenant = get_current_tenant()
 active_db = `get_database_for_tenant(tenant)`
 
-customer = Customer(...)
-customer.save(`using=active_db`)
+question = Question(...)
+question.save(`using=active_db`)
 
-Customer.objects.`using(active_db)`.filter(...)
-Customer.objects.`db_manager(active_db)`.do_something(...)
+Question.objects.`using(active_db)`.filter(...)
+Question.objects.`db_manager(active_db)`.do_something(...)
 ```
 
 ---
@@ -388,6 +563,8 @@ class IsolatedTenantsDatabaseRouter:
 **.green[The good]**
 
 -   Optimized for isolation.
+
+--
 
 **.red[The bad]**
 
@@ -413,9 +590,9 @@ layout: true
 .emph[Entry-level, tenant-specific models] require a pointer to the tenant they belong to:
 
 ```python
-class SomeTenantSpecificModel(models.Model):
+class Question(models.Model):
 
-    tenant = models.ForeignKey("TenantModel", ...)
+    tenant = models.ForeignKey("Site", ...)
 
     # Rest of the model
     ...
@@ -429,11 +606,11 @@ Queries need to rely on the active tenant:
 ```python
 tenant = get_current_tenant()
 
-Customer.objects.create(`tenant=tenant`, ...)
+Question.objects.create(`tenant=tenant`, ...)
 
-Customer.objects.filter(`tenant=tenant`, ...)
-Order.objects.filter(`customer__tenant=tenant`, ...)
-some_product.orders.filter(`tenant=tenant`, ...)
+Question.objects.filter(`tenant=tenant`, ...)
+Answer.objects.filter(`question__tenant=tenant`, ...)
+some_user.questions.filter(`tenant=tenant`, ...)
 ```
 
 ---
@@ -456,6 +633,8 @@ Tenant scope could be automatically **queried** via:
 **.green[The good]**
 
 -   Optimized for scalability.
+
+--
 
 **.red[The bad]**
 
@@ -513,8 +692,8 @@ layout: true
 Your queries remain unchanged:
 
 ```python
-Customer.objects.all()
-Customer.objects.create(...)
+Question.objects.all()
+Question.objects.create(...)
 ```
 
 --
@@ -559,6 +738,8 @@ class SemiIsolatedTenantsDatabaseRouter:
 
 -   Optimized for isolation with increased scalability.
 
+--
+
 **.red[The bad]**
 
 -   Extra effort to understand and control how schemas interact.
@@ -594,7 +775,7 @@ layout: true
 class: middle
 layout: false
 
-# Requests and URL reversing
+# Tenant routing
 
 ---
 
@@ -772,13 +953,13 @@ def some_celery_task(self, tenant_id, ...):
 class: middle
 layout: false
 
-## 😅 Too much to cover, huh?
+# Now, the packages
 
 ---
 
 layout: true
 
-## The fish
+## Available packages
 
 ---
 
@@ -791,6 +972,10 @@ layout: true
 
 -   [bernardopires/django-tenant-schemas](https://github.com/bernardopires/django-tenant-schemas)
 -   [tomturner/django-tenants](https://github.com/tomturner/django-tenants)
+
+.bottom[
+.footnote[Found at https://djangopackages.org/grids/g/multi-tenancy/]
+]
 
 ---
 

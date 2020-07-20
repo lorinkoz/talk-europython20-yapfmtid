@@ -117,6 +117,12 @@ h5 {
     content: "]";
 }
 
+.high {
+    font-family: Bahnschrift, "Trebuchet MS", "Lucida Sans Unicode",
+        "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    font-size: 1.2em;
+}
+
 .red {
     color: crimson;
 }

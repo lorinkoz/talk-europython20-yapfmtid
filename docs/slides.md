@@ -7,12 +7,6 @@ class: middle
 
 Lorenzo Peña &middot; @lorinkoz
 
-???
-
--   Salute, thank the audience for joining.
--   Who am I: name, city, profession, years of experience with Django.
--   Good wishes for EP2020
-
 ---
 
 ## 2020 is going great so far
@@ -22,73 +16,6 @@ Lorenzo Peña &middot; @lorinkoz
 .bottom[
 .footnote[This is arguably one of the most overused jokes of the year]
 ]
-
-???
-
--   In what's probably the most overused joke of the year...
-
----
-
-layout: true
-
-## But so is Django <small>(no... seriously)</small>
-
-![Django motto](images/django.png)
-
----
-
----
-
--   Just turned 15 years old!
-
---
-
--   Mature, solid and battle tested.
-
---
-
--   Vast ecosystem - over 4k projects..ref[1]
-
-.bottom[
-.footnote[.ref[1] As listed in https://djangopackages.org]
-]
-
----
-
--   Awesome community.
-
---
-
--   Great momentum.
-
----
-
--   More async support in every release.
-
---
-
--   Reactivity (not React) gaining some traction..ref[1].ref[2]
-
-.bottom[
-.footnote[.ref[1] https://github.com/edelvalle/reactor]
-.footnote[.ref[2] https://github.com/jonathan-s/django-sockpuppet]
-]
-
----
-
--   New cycle of monoliths becoming popular.
-
---
-
--   New cycle of batteries-included frameworks becoming popular.
-
----
-
--   Yes, it scales!
-
---
-
--   Yes, you love it!
 
 ---
 
@@ -101,111 +28,166 @@ layout: false
 
 ---
 
-class: middle
-layout: false
-
-# Django and multi-tenancy
-
---
-
-What does it have to do with .emph[you]?
-
----
-
-## I have an hypothesis
-
---
-
-The world is divided in two kinds of Djangonauts:
-
-1. Those who **are doing** multi-tenancy.
-2. Those who **will be doing** multi-tenancy anytime soon.
-
---
-
-.box[🔥 Multi-tenancy is inevitable]
-
---
-
-.box[🦉 You don't come to it, it comes to you]
-
-???
-
-Oportunity usually presents itself as:
-
--   Something that works good for a single tenant, and can be smartly expanded to a multi-tenant architecture
--   A million dollar idea for a SaaS.
-
-So, my dear audience, if you're not doing multi-tenancy in Django right now, I suspect that the oportunity can be just around the corner. So be prepared!
-
----
-
 class: middle center
 layout: false
 
 ![Meme of "Is this a pigeon?" about multi-tenancy](images/pigeon-meme-multi-tenancy.png)
 
-???
-
-Now, before getting any deeper in the topic, and in case you're wondering what are we talking about, let's get on the same page on some definitions.
-
 ---
 
 layout: true
 
-## A tiny bit of theory
+## Multi-tenancy
+
+---
+
+-   Customer .red[**red**] has a problem.
+
+--
+
+-   You develop a solution.
+
+--
+
+-   Everything works great!
+
+--
+
+-   Now customers .blue[**blue**], .green[**green**] and .yellow[**yellow**] have the same problem.
+
+--
+
+.box[🤔 What to do?]
+
+---
+
+.center[![Screenshot of Townscaper with tiny houses](images/single-tenancy.png)]
 
 .bottom[
-.footnote[.ref[1] https://en.wikipedia.org/wiki/Multitenancy]
+.footnote[Screenshot of https://store.steampowered.com/app/1291340/Townscaper/]
 ]
 
 ---
 
-**Multi-tenancy:** Software architecture in which a single instance of software runs on a server and serves multiple tenants..ref[1]
+.center[![Screenshot of Townscaper with an apartment building](images/multi-tenancy.png)]
 
-.right[![Diagram of multi-tenanacy](images/diagram-multi-tenancy.png)]
+.bottom[
+.footnote[Screenshot of https://store.steampowered.com/app/1291340/Townscaper/]
+]
 
 ---
 
-**Tenant:** Group of users who share a common access with specific privileges to the software instance..ref[1]
+.left-column-66[
 
-.right[![Diagram of tenants](images/diagram-tenant.png)]
+-   Software architecture.
+-   Single instance of code.
+-   Serves multiple tenants.
 
-???
+]
 
--   Private environment
--   In a running shared software
--   Where one or many users interact in isolation
+.right-column-33[.right[![Diagram of multi-tenanacy](images/diagram-multi-tenancy.png)]]
+
+--
+
+![Dropbox logo](images/dropbox-logo.png)
+![Shopify logo](images/shopify-logo.png)
+![Slack logo](images/slack-logo.png)
+![Wordpress logo](images/wordpress-logo.png)
 
 ---
 
 layout: true
 
-## Types of multi-tenancy
+## Tenants
 
 ---
 
-???
+.left-column-66[
 
-Now, the relationship between users and tenants delineates some types of multi-tenancy we should be aware of.
+-   Isolated space.
+-   Users with specific privileges interact.
+
+]
+.right-column-33[
+.right[![Diagram of tenants](images/diagram-tenant.png)]
+]
+
+---
+
+.left-column-33[
+.center[![Dropbox logo](images/dropbox-logo.png) Accounts]
+]
+
+.left-column-33[
+.center[![Slack logo](images/slack-logo.png) Workspaces]
+]
+
+.left-column-33[
+.center[![Wordpress logo](images/wordpress-logo.png) Blogs]
+]
+
+.left-column-33[
+.center[![Discord logo](images/discord-logo.png) Servers]
+]
+
+.left-column-33[
+.center[![Shopify logo](images/shopify-logo.png) Shops]
+]
+
+.left-column-33[
+.center[![Stackexchange logo](images/stackexchange-logo.png) Sites]
+]
+
+---
+
+layout: true
+
+## Users and tenants
 
 ---
 
 Users exist **outside** the context of tenants:
 
-.center[![Diagram of users outside tenants](images/diagram-users-out-tenants.png)]
+.left-column-66[
+.left[![Diagram of users outside tenants](images/diagram-users-out-tenants.png)]
+]
+
+--
+
+.right-column-33[
+.center[![WordPress logo](images/wordpress-logo.png)]
+.center[![Shopify logo](images/shopify-logo.png)]
+.center[![Discord logo](images/discord-logo.png)]
+]
 
 ---
 
 Users exist **within** the context of tenants:
 
-.center[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
+.left-column-66[
+.left[![Diagram of users inside tenants](images/diagram-users-in-tenants.png)]
+]
+
+--
+
+.right-column-33[
+.center[![Slack logo](images/slack-logo.png)]
+]
 
 ---
 
 Users exist **as** tenants:
 
-.center[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
+.left-column-66[
+.left[![Diagram of users equalling tenants](images/diagram-users-equal-tenants.png)]
+]
+
+--
+
+.right-column-33[
+.center[![Gmail logo](images/gmail-logo.png)]
+.center[![Dropbox logo](images/dropbox-logo.png)]
+]
 
 ---
 
@@ -213,17 +195,6 @@ layout: false
 class: middle center
 
 ![Meme of Boromir "One does not simply walk into Mordor" about multi-tenancy](images/boromir-mordor-meme-multi-tenancy.png)
-
-???
-
-How do we actually do this in Django?
-
-[MEME]
-
-Why?
-
--   Lots of things to do and do right.
--   Some of those things are non-trivial.
 
 ---
 
@@ -243,50 +214,13 @@ layout: true
 .right[![Lego castle](images/lego-castle.png)]
 ]
 
-???
-
-Do you need a package as foundation for your multi-tenant project? Most likely yes!
-
 --
 
 .box[🦉 But none of them solves it all]
 
-???
-
-Because the topic is too complex and has many many sides.
-
 ---
 
 .center[![Lego bricks](images/legos.png)]
-
-???
-
--   Let's pretend we're going to implement multi-tenancy from scratch.
--   You'll get a package, but not the one you can install.
-
----
-
-<p>Tired:</p>
-
-> Give someone a fish and you feed them for a day; teach someone to fish and you feed them for a lifetime.
-
-???
-
-Most likely you've heard of the proverb.
-
---
-
-<p>Wired:</p>
-
-> Give them a package for a SaaS and they will make it; teach them the underlying principles and they will break it.
-
-???
-
-Now, the equivalent of this proverb applied to multi-tenancy would be...
-
-[WIRED]
-
-I consider a good thing that you are capable of breaking your SaaS. Only doing that you'll be able to rebuild it better for the benefit of us all.
 
 ---
 
@@ -295,26 +229,11 @@ layout: false
 
 # The challenges ahead
 
-???
-
-Briefly mention the challenges ahead:
-
--   Active tenant
--   Database architecture
--   Routing requests
--   The scope of everything else
-
 ---
 
 layout: true
 
 ## The active tenant
-
----
-
-???
-
-This takes a change of mindset.
 
 ---
 
@@ -365,7 +284,6 @@ We could also have:
 # Drop-in replacement for threading.locals that works with asyncio
 from asgiref.local import Local
 
-
 _active = Local()
 
 def get_current_tenant():
@@ -375,22 +293,9 @@ def activate(tenant):
     _active.tenant = tenant
 ```
 
-???
-
-Here's a basic implementation example.
-
 --
 
 .warning[⚠️ The use of globals is generally discouraged]
-
-???
-
-Warning:
-
--   You shouldn't start creating globals for everything!
--   There is a reason why this pattern is so scarce in the Django codebase itself.
--   The more you depend on a global variable, the more coupled becomes your code, harder to test in isolation.
--   This would be an acceptable use case of an otherwise frowned upon pattern.
 
 ---
 
@@ -404,20 +309,12 @@ Warning:
 
 .box[What happens if for some operation there is<br/>😶 **no active tenant**?]
 
-???
-
-We can discuss this later...
-
 ---
 
 class: middle
 layout: false
 
 # Database, models and managers
-
-???
-
-Once that we have the concept of active tenant settled, it's time to move to one of the most interesting parts of multi-tenancy...
 
 ---
 
@@ -431,10 +328,6 @@ Once that we have the concept of active tenant settled, it's time to move to one
 
 **Semi-isolated:**<br/>One database, one schema per tenant (PostgreSQL)
 
-???
-
-This is the common knowledge you get on most info about multi-tenancy out there.
-
 ---
 
 layout: true
@@ -444,10 +337,6 @@ layout: true
 ---
 
 .center[![Diagram of isolated tenants](images/diagram-isolated.png)]
-
-???
-
-One database for every tenant.
 
 ---
 
@@ -465,7 +354,7 @@ DATABASES = {
 
 ---
 
-Queries need to define the active tenant:
+Queries need to rely on the active tenant:
 
 ```python
 tenant = get_current_tenant()
@@ -478,46 +367,36 @@ Customer.objects.`using(active_db)`.filter(...)
 Customer.objects.`db_manager(active_db)`.do_something(...)
 ```
 
---
-
-.box[🙋 Do this allow for some automation?]
-
 ---
 
-Django has a thing called database routers:
+Scope could be offloaded to **database routers**:
 
 ```python
-class IsolatedTenantsRouter:
+class IsolatedTenantsDatabaseRouter:
 
-    def db_for_read(self, model, **hints):
+    def `db_for_read`(self, model, **hints):
         tenant = get_current_tenant()
         return `get_database_for_tenant(tenant)`
 
-    def db_for_write(self, model, **hints):
+    def `db_for_write`(self, model, **hints):
         tenant = get_current_tenant()
         return `get_database_for_tenant(tenant)`
 ```
 
 ---
 
-**.green[Benefits]**
+**.green[The good]**
 
 -   Optimized for isolation.
 
-**.red[Limitations]**
+**.red[The bad]**
 
--   No cross-tenant relations.
--   No relations between tenants and shared data.
+-   No relations across databases.
 -   Adding tenants require reconfiguring the project.
 
 ---
 
 .center[![Scrooge McDuck in a pile of money](images/mcduck-gold.png)]
-
-???
-
--   Increased costs of operations.
--   Scrooge McDuck might need to pay for your databases.
 
 ---
 
@@ -531,54 +410,38 @@ layout: true
 
 ---
 
-.emph[Entry-level, tenant-specific models] require a FK to the model that controls the tenants:
+.emph[Entry-level, tenant-specific models] require a pointer to the tenant they belong to:
 
 ```python
-class SharedTenantAbstractModel(models.Model):
+class SomeTenantSpecificModel(models.Model):
 
     tenant = models.ForeignKey("TenantModel", ...)
 
-    class Meta:
-        abstract = True
+    # Rest of the model
+    ...
+
 ```
 
 ---
 
-Assign the active tenant before creating a model instance:
+Queries need to rely on the active tenant:
 
 ```python
-# Via model save
-customer = Customer(...)
-*customer.tenant = get_current_tenant()
-customer.save()
+tenant = get_current_tenant()
 
-# Via manager create
-Customer.objects.create(`tenant=get_current_tenant()`, ...)
+Customer.objects.create(`tenant=tenant`, ...)
+
+Customer.objects.filter(`tenant=tenant`, ...)
+Order.objects.filter(`customer__tenant=tenant`, ...)
+some_product.orders.filter(`tenant=tenant`, ...)
 ```
-
----
-
-Scope the relevant queries with the active tenant:
-
-```python
-# In regular queries
-Customer.objects.filter(`tenant=get_current_tenant()`, ...)
-Order.objects.filter(`customer__tenant=get_current_tenant()`, ...)
-
-# In related queries
-some_product.orders.filter(`tenant=get_current_tenant()`, ...)
-```
-
---
-
-.box[🙋 Do this allow for some automation?]
 
 ---
 
 Tenant field could be automatically **assigned** via:
 
 -   Default value for the field (a callable).
--   `ForeignKey` field subclass with a `pre_save` hook.
+-   Custom field (`ForeignKey` subclass) with a `pre_save` hook.
 -   `pre_save` signal on relevant models.
 
 --
@@ -590,14 +453,13 @@ Tenant scope could be automatically **queried** via:
 
 ---
 
-**.green[Benefits]**
+**.green[The good]**
 
 -   Optimized for scalability.
 
-**.red[Limitations]**
+**.red[The bad]**
 
--   Extra care to define tenant annotated models.
--   Extra care with tenant annotated queries.
+-   Data isolation takes extra effort.
 
 ---
 
@@ -608,8 +470,8 @@ Tenant scope could be automatically **queried** via:
 .right-column[
 
 -   Bookmark all your tenant anotated queries.
--   Unit test each one of them.
--   Make the test suite fail if any query is untested.
+-   Test each one of them.
+-   Test that you tested each one of them.
     ]
 
 --
@@ -644,20 +506,7 @@ layout: true
 
 -   Layer between database and tables.
 -   Equivalent to namespaces.
-
----
-
-Search path defines the precedence of schemas:
-
-.left-column-33[![Diagram of schemas](images/schemas.png)]
-.right-column-66[{{content}}]
-
---
-
-```psql
-        SET search_path = tenant1, shared;
-        SET search_path = tenant2, shared;
-```
+-   Searchable through the **search path**.
 
 ---
 
@@ -672,13 +521,9 @@ Customer.objects.create(...)
 
 .warning[👀 Increased technical challenge somewhere else!]
 
-???
-
-This is the hardest path to implement from scratch.
-
 ---
 
-Requires a custom database backend in order to set `search_path` based on active tenant:
+Requires a **custom database backend** in order to set the search path based on the active tenant:
 
 ```python
 from django.db.backends.postgresql import base as postgresql
@@ -696,46 +541,31 @@ class DatabaseWrapper(postgresql.DatabaseWrapper):
 
 ---
 
-Requires a database router in order to control which models are migrated on which schemas:
+Requires a **database router** in order to control which models are migrated on which schemas:
 
 ```python
-class SemiIsolatedTenantsRouter:
-    def allow_migrate(self, db, app_label, model_name, ...):
+class SemiIsolatedTenantsDatabaseRouter:
+
+    def `allow_migrate`(self, db, app_label, model_name, ...):
         tenant = get_current_tenant()
         if tenant is not None:
-            return `app_is_tenant_specific(app_label)`
-        return `app_is_shared(app_label)`
+            return `is_tenant_specific(app_label, model_name)`
+        return not `is_tenant_specific(app_label, model_name)`
 ```
-
---
-
-.warning[👀 The tweak is on migrations!]
-
-???
-
-This also implies that migrations can no longer be run project-wise, but on each schema.
 
 ---
 
-**.green[Benefits]**
+**.green[The good]**
 
--   Optimized for isolation.
--   Allows relations between tenants and shared data.
+-   Optimized for isolation with increased scalability.
 
-**.red[Limitations]**
+**.red[The bad]**
 
--   More magic than recommended by daily dose?
--   Extra care to define shared apps and tenant specific apps.
--   Extra care to define where to put users, sessions and ctypes.
+-   Extra effort to understand and control how schemas interact.
 
 ---
 
 .center[![Meme of crazy lady and cat about schemas and migrations](images/cat-lady-meme-schemas.png)]
-
-???
-
--   Migrations now must be run in all schemas.
--   It takes discipline to do zero downtime upgrades.
 
 ---
 
@@ -751,24 +581,13 @@ layout: true
 
 --
 
-.left-column-66[But here's some food for thought...]
+.left-column-66[
+
+-   Pros and cons in all of them.
+-   Depends on your specific use case.
+
+]
 .right-column-33[.right[![Young boy after a food fight](images/food-fight.png)]]
-
-???
-
-We can discuss later...
-
----
-
-|                       | Isolated | Shared | Semi-isolated |
-| --------------------- | -------- | ------ | ------------- |
-| Users inside tenants  | 🙂       | 🙂     | 🙂            |
-| Users outside tenants | 😱       | 🙂     | 🤔😅          |
-| Tenant isolation      | 😃       | 🤔😬   | 🤔😃          |
-| Tenant aggregations   | 😬       | 😃     | 😬            |
-| Database cost         | 🤑       | 🙂     | 🙂            |
-| Database migrations   | 😅       | 😃     | 😅😬          |
-| Overall scalability   | 😬       | 😃     | 🤨            |
 
 ---
 
@@ -825,46 +644,11 @@ def TenantFromSessionMiddleware(get_response):
 
 ---
 
-.warning[⚠️ The order of middleware is important!]
-
---
-
-.left-column[
-
-.center[![Diagram of users selected prior to tenants](images/user-then-tenant.png)]
-
-```python
-SessionMiddleware
-*TenantFromSessionMiddleware
-AuthenticationMiddleware
-*TenantFromUserMiddleware
-```
-
-]
-
---
-
-.right-column[
-
-.center[![Diagram of tenants selected prior to users](images/tenant-then-user.png)]
-
-```python
-*StandaloneTenantMiddleware
-SessionMiddleware
-AuthenticationMiddleware
-```
-
-]
-
----
-
 layout: true
 
 ## Reversing tenant-aware URLs
 
 ---
-
---
 
 .box[🙋‍♀️ How to reverse URLs so that the tenant is included?]
 
@@ -904,10 +688,6 @@ All URLs must be appended with the query parameter.
 layout: false
 
 ## Tenant-specific URLConfs
-
-???
-
-Bonus!
 
 --
 
@@ -1011,9 +791,6 @@ layout: true
 
 -   [bernardopires/django-tenant-schemas](https://github.com/bernardopires/django-tenant-schemas)
 -   [tomturner/django-tenants](https://github.com/tomturner/django-tenants)
-
-???
-Packages are opinionated, primarily from the database architecture, but also from tenant routing.
 
 ---
 

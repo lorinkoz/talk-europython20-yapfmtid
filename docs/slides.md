@@ -100,7 +100,7 @@ layout: true
 
 --
 
--   Now customers .blue[**blue**], .green[**green**] and .yellow[**yellow**] have the same problem.
+-   Now, customers .blue[**blue**], .green[**green**] and .yellow[**yellow**] have the same problem.
 
 --
 
@@ -289,12 +289,12 @@ layout: true
 layout: false
 class: middle
 
-|     |                      |
-| --- | -------------------- |
-| 👉  | .high[yet another]   |
-|     | .high[package]       |
-|     | .high[multi-tenancy] |
-|     | .high[Django]        |
+|     |                                        |
+| --- | -------------------------------------- |
+| 👉  | .high[the ultimate <s>yet another</s>] |
+|     | .high[package]                         |
+|     | .high[multi-tenancy]                   |
+|     | .high[Django]                          |
 
 ---
 

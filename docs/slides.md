@@ -31,7 +31,7 @@ class: center
 
 class: center
 
-## We don't even know what to make of this
+## Future is uncertain in some aspects
 
 ![Dinosaur in traffic with meteors falling, parody with GPT-3](images/dinosaur-traffic-gpt3.jpg)
 
@@ -64,7 +64,7 @@ layout: false
 
 ![Meme of Django lifting the heavy weight of 2020 decade](images/django-2020-meme.png)
 
-### Don't worry, Django can handle the decade
+### Django can handle the decade - We're rooting for it
 
 ---
 
@@ -133,7 +133,7 @@ layout: true
 .left-column-66[
 
 -   Software architecture.
--   Single instance of code.
+-   Single instance of software.
 -   Serves multiple tenants.
 
 ]
@@ -236,7 +236,7 @@ layout: true
 
 --
 
-.box[🦉 But none of them solves it all]
+.box[🦉 But there is no one size fits all]
 
 ---
 
@@ -427,6 +427,8 @@ layout: false
 
 --
 
+name: architectural-choices
+
 1. Users and tenants
 2. Database architecture
 3. Tenant routing
@@ -483,6 +485,14 @@ Users exist **as** tenants:
 .center[![Gmail logo](images/gmail-logo.png)]
 .center[![Dropbox logo](images/dropbox-logo.png)]
 ]
+
+---
+
+.box[🙋‍♀️ Which one to pick?]
+
+--
+
+That will depend on your use case.
 
 ---
 
@@ -825,11 +835,13 @@ def TenantFromSessionMiddleware(get_response):
 
 Multiple retrieval methods could be implemented:
 
--   `get_tenant_from_user(request.user)`
--   `get_tenant_from_headers(request.headers)`
--   `get_tenant_from_domain(request.get_host())`
--   `get_tenant_from_subfolder(request.path)`
--   `get_tenant_from_params(request.GET)`
+|           |                                              |
+| --------- | -------------------------------------------- |
+| user      | `get_tenant_from_user(request.user)`         |
+| headers   | `get_tenant_from_headers(request.headers)`   |
+| domain    | `get_tenant_from_domain(request.get_host())` |
+| subfolder | `get_tenant_from_subfolder(request.path)`    |
+| params    | `get_tenant_from_params(request.GET)`        |
 
 --
 
@@ -892,6 +904,10 @@ def URLConfFromTenantMiddleware(get_response):
 
 ---
 
+template: architectural-choices
+
+---
+
 class: middle
 layout: false
 
@@ -916,8 +932,9 @@ layout: false
 
 ## File storage
 
--   You can define a custom tenant storage that organizes files per tenant.
--   If cross-tenant file access is a security problem for you, you will need a custom view to act as proxy for files and decide if the incoming request has access to the requested file.
+-   You can define a custom file storage that organizes files per tenant.
+-   Generate pre-signed URLs for increased security.
+-   Use a proxy view for airtight security.
 
 ---
 
@@ -959,14 +976,22 @@ def some_celery_task(self, tenant_id, ...):
 ## Channels (websockets)
 
 -   Requires custom middleware to activate tenant from request.
--   Requires naming your consumer groups including the tenant (for proper cross-tenant group isolation)
+-   Requires naming your consumer groups including the tenant (for proper tenant groups isolation)
+
+---
+
+## For everything that was not covered
+
+--
+
+.box[💡 Principles are generally extensible]
 
 ---
 
 class: middle
 layout: false
 
-# Finally, the packages
+# Now, some of the packages
 
 ---
 
@@ -999,7 +1024,7 @@ layout: false
 --
 
 -   Reporting bugs.
--   Proposing / implementing new features.
+-   Implementing new features.
 -   Improving documentation.
 
 --
@@ -1022,7 +1047,7 @@ layout: false
 
 ##### Special thanks to:
 
-Russell Keith-Magee, Raphael Michel, Orlando William
+Russell Keith-Magee, Orlando William, Raphael Michel
 
 ---
 

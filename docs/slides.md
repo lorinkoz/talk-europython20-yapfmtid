@@ -45,6 +45,10 @@ class: center
 
 --
 
+-   Mature, solid and battle tested.
+
+--
+
 -   Amazing community, great momentum!
 
 --
@@ -490,10 +494,6 @@ Users exist **as** tenants:
 
 .box[🙋‍♀️ Which one to pick?]
 
---
-
-That will depend on your use case.
-
 ---
 
 class: middle
@@ -646,7 +646,7 @@ Tenant scope could be automatically **queried** via:
 
 **.red[The bad]**
 
--   Data isolation takes extra effort.
+-   Data isolation takes extra development effort.
 
 ---
 
@@ -706,7 +706,7 @@ Question.objects.create(...)
 
 --
 
-.warning[👀 Increased technical challenge somewhere else!]
+.warning[👀 Increased technical challenge somewhere else]
 
 ---
 
@@ -728,7 +728,7 @@ class DatabaseWrapper(postgresql.DatabaseWrapper):
 
 ---
 
-Requires a **database router** in order to control which models are migrated on which schemas:
+Requires a **database router** for controlling migrations:
 
 ```python
 class SemiIsolatedTenantsDatabaseRouter:
@@ -739,6 +739,10 @@ class SemiIsolatedTenantsDatabaseRouter:
             return `is_tenant_specific(app_label, model_name)`
         return not `is_tenant_specific(app_label, model_name)`
 ```
+
+--
+
+.warning[⚠️ The `migrate` command itself requires tweaking!]
 
 ---
 
@@ -925,16 +929,38 @@ layout: false
 
 ## Management commands
 
--   For new commands, you can include a tenant argument.
--   For existing, non tenant-aware commands, you can define a .emph[special command wrapper].
+For new commands, you can include a tenant argument.
+
+```shell
+python3 manage.py do_something_in_tenant `-t tenant1`
+```
+
+--
+
+For existing, non tenant-aware commands, you can define a .emph[special command wrapper].
+
+```shell
+python3 manage.py `tenant_wrap "loaddata some_fixture"` -t tenant1
+```
+
+--
+
+```shell
+python3 manage.py tenant_wrap loaddata some_fixture -t tenant1
+```
 
 ---
 
 ## File storage
 
--   You can define a custom file storage that organizes files per tenant.
--   Generate pre-signed URLs for increased security.
--   Use a proxy view for airtight security.
+You can define a custom file storage that organizes files per tenant.
+
+--
+
+##### Higher security contexts:
+
+-   Generate pre-signed URLs.
+-   Use a proxy view.
 
 ---
 
@@ -947,14 +973,14 @@ You can define a tenant-specific cache key function:
 CACHES = {
     "default": {
         ...
-        "KEY_FUNCTION": "myproject.cache.get_key_from_tenant",
+        `"KEY_FUNCTION": "myproject.cache.get_key_from_tenant",`
     }
 }
 
 # myproject/cache.py
 def get_key_from_tenant(key, key_prefix, version):
     tenant = get_current_tenant()
-    return "{}:{}:{}:{}".format(tenant, key_prefix, version, key)
+    return `"{}:{}:{}:{}".format(tenant, key_prefix, version, key)`
 ```
 
 ---
@@ -965,8 +991,8 @@ You can pass the tenant to activate as one of your task parameters:
 
 ```python
 @app.task(bind=True)
-def some_celery_task(self, tenant_id, ...):
-    tenant = get_tenant_from_id(tenant_id)
+def some_celery_task(self, `tenant_id`, ...):
+    tenant = `get_tenant_from_id(tenant_id)`
     activate(tenant)
     ...
 ```

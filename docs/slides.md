@@ -656,7 +656,7 @@ Tenant scope could be automatically **queried** via:
 
 .right-column[
 
--   Bookmark all your tenant anotated queries.
+-   Bookmark all your tenant scoped queries.
 -   Test each one of them.
 -   Test that you tested each one of them.
     ]
